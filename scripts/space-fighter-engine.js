@@ -10,9 +10,10 @@
         screenWidth,
         screenHeight,
         frequencyCounter,
+        enemyFrequency,
+        shotSpeed,
         canvas,
-        ctx,
-        enemyFrequency;
+        ctx;
 
     initialize();
 
@@ -20,7 +21,19 @@
 
     function initialize() {
         document.body.addEventListener("keydown", movePlayer);
+        document.body.addEventListener('click', shootEnemy);
         getScreenWidthAndHeight();
+        shotSpeed = 30;
+
+        frequencyCounter = 0;
+        enemyFrequency = 2;
+
+        player = {
+            x: 300,
+            y: 450,
+            width: 50,
+            height: 10
+        };
 
         //Canvas Initialization
         canvas = document.getElementById("cnv");
@@ -36,16 +49,6 @@
         //    width: screenWidth,
         //    height: screenHeight
         //});
-
-        frequencyCounter = 0;
-        enemyFrequency = 2;
-
-        player = {
-            x: 300,
-            y: 450,
-            width: 50,
-            height: 10
-        };
     }
 
     function run() {
@@ -60,7 +63,6 @@
         if (frequencyCounter > enemyFrequency) {
             frequencyCounter = 0;
         }
-        console.log(enemies.length);
     }
 
     function drawScreen() {
@@ -173,7 +175,7 @@
 
     function movePlayer(event) {
         switch (event.keyCode) {
-                //move left
+            //move left
             case 37: {
                 player.x -= 30;
                 break;
@@ -195,5 +197,41 @@
             }
         }
         drawScreen();
+    }
+
+    function Shot(targetPosition) {
+        this.playerX = player.x;
+        this.playerY = player.y;
+        this.targetX = targetPosition.x;
+        this.targetY = targetPosition.y;
+        this.currentX = this.playerX;
+        this.currentY = this.playerY;
+        this.updatePosition = function (shotSpeed) {
+            var deltaX = this.targetX - this.playerX;
+            var deltaY = this.targetY - this.playerY;           
+        }        
+    }
+
+    function shootEnemy(e) {
+        var targetPosition = {
+            x: e.clientX,
+            y: e.clientY
+        }
+
+        shots.push(new Shot(targetPosition));
+
+        //console.log("mouse  X" + e.clientX + "mouse Y" + e.clientY);
+        //console.log("player X" + player.x + "player Y" + player.y);
+    }
+
+    function moveShots() {
+        for (var i = 0; i < shots.length ; i++) {
+            
+            //shots[i].updatePosition(shotSpeed); not implemented yet
+            if (shots[i].y >= screenHeight || shots[i].y < 0 ||
+                shots[i].x >= screenWidth || shots[i].x < 0) {
+                enemies.splice(i, 1);
+            }
+        }
     }
 })();
