@@ -14,6 +14,7 @@
         enemyFrequency,
         shotSpeed,
         canvas,
+        collisionRange,
         ctx;
 
     initialize();
@@ -26,6 +27,7 @@
         getScreenWidthAndHeight();
         shotSpeed = 40;
         enemiesSpeed = 10;
+        collisionRange = 50;
 
         frequencyCounter = 0;
         enemyFrequency = 2;
@@ -58,7 +60,7 @@
             enemies.push(new Enemy());
         }
 
-        moveShots();
+        moveShots(shotSpeed);
         moveEnemies(enemiesSpeed);
         drawScreen();
 
@@ -254,16 +256,28 @@
         //console.log("player X" + player.x + "player Y" + player.y);
     }
 
-    function moveShots() {
+    function moveShots(shotSpeed) {
         for (var i = 0; i < shots.length ; i++) {
             shots[i].updatePosition(shotSpeed);
-            
-            //shots[i].updatePosition(shotSpeed); not implemented yet
+
             if (shots[i].currentY >= screenHeight || shots[i].currentY < 0 ||
                 shots[i].currentX >= screenWidth || shots[i].currentX < 0) {
-                shots.splice(i, 1);               
+                shots.splice(i, 1);
             }
-            console.log(shots.length);
+            if (isCollisionDetected(shots[i])) {
+                shots.splice(i, 1);
+            } 
         }
+    }
+
+    function isCollisionDetected(currentShot) {
+        for (var i = 0; i < enemies.length; i++) {
+            if (Math.abs(currentShot.currentX - enemies[i].x) < collisionRange &&
+                Math.abs(currentShot.currentY - enemies[i].y) < collisionRange) {
+                enemies.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
     }
 })();
