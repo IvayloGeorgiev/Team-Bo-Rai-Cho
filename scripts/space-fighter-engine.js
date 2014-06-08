@@ -2,6 +2,7 @@
 
 (function () {
     var enemies = [],
+        enemiesSpeed,
         shots = [],
         player,
         stage,
@@ -23,7 +24,8 @@
         document.body.addEventListener("keydown", movePlayer);
         document.body.addEventListener('click', shootEnemy);
         getScreenWidthAndHeight();
-        shotSpeed = 30;
+        shotSpeed = 40;
+        enemiesSpeed = 10;
 
         frequencyCounter = 0;
         enemyFrequency = 2;
@@ -56,7 +58,8 @@
             enemies.push(new Enemy());
         }
 
-        moveEnemies(20);
+        moveShots();
+        moveEnemies(enemiesSpeed);
         drawScreen();
 
         frequencyCounter++;
@@ -92,6 +95,15 @@
             ctx.arc(x, y, 10, 0, 2 * Math.PI);
             ctx.fill();
         }
+
+        //Draw Shots
+        ctx.fillStyle = "black";
+        for (var i = 0; i < shots.length; i++) {
+            ctx.beginPath();
+            ctx.arc(shots[i].currentX, shots[i].currentY, 2, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
 
         //Draw Player
         ctx.beginPath();
@@ -169,7 +181,7 @@
             //    && enemies[i].y > (player.y - player.height)) {
             //    enemies.splice(i, 1);
             //    gameOver();
-            //}
+            //}                
         }
     }
 
@@ -208,8 +220,26 @@
         this.currentY = this.playerY;
         this.updatePosition = function (shotSpeed) {
             var deltaX = this.targetX - this.playerX;
-            var deltaY = this.targetY - this.playerY;           
-        }        
+            var deltaY = this.targetY - this.playerY;
+
+            var vectorAngle = Math.atan(Math.abs(deltaY) / Math.abs(deltaX));
+            var xAbsSpeed = Math.abs(Math.cos(vectorAngle) * shotSpeed);
+            var yAbsSpeed = Math.abs(Math.sin(vectorAngle) * shotSpeed);
+
+            if (deltaX >= 0 && deltaY >= 0) {
+                this.currentX += xAbsSpeed;
+                this.currentY += yAbsSpeed;
+            } else if (deltaX >= 0 && deltaY < 0) {
+                this.currentX += xAbsSpeed;
+                this.currentY -= yAbsSpeed;
+            } else if (deltaX <= 0 && deltaY < 0) {
+                this.currentX -= xAbsSpeed;
+                this.currentY -= yAbsSpeed;
+            } else if (deltaX <= 0 && deltaY > 0) {
+                this.currentX -= xAbsSpeed;
+                this.currentY += yAbsSpeed;
+            }
+        }
     }
 
     function shootEnemy(e) {
@@ -226,12 +256,14 @@
 
     function moveShots() {
         for (var i = 0; i < shots.length ; i++) {
+            shots[i].updatePosition(shotSpeed);
             
             //shots[i].updatePosition(shotSpeed); not implemented yet
-            if (shots[i].y >= screenHeight || shots[i].y < 0 ||
-                shots[i].x >= screenWidth || shots[i].x < 0) {
-                enemies.splice(i, 1);
+            if (shots[i].currentY >= screenHeight || shots[i].currentY < 0 ||
+                shots[i].currentX >= screenWidth || shots[i].currentX < 0) {
+                shots.splice(i, 1);               
             }
+            console.log(shots.length);
         }
     }
 })();
