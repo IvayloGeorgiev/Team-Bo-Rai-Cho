@@ -5,9 +5,6 @@
         enemiesSpeed,
         shots = [],
         player,
-        stage,
-        gameLayer,
-        infoLayer,
         screenWidth,
         screenHeight,
         frequencyCounter,
@@ -15,44 +12,43 @@
         shotSpeed,
         canvas,
         collisionRange,
-        ctx;
+        ctx,
+        scaleX = 1,
+        scaleY = 1,
+        DEFAULT_WIDTH = 1024,
+        DEFAULT_HEIGHT = 768;
 
     initialize();
 
-    setInterval(run, 50);
+    setInterval(run, 20);
 
     function initialize() {
         document.body.addEventListener("keydown", movePlayer);
         document.body.addEventListener('click', shootEnemy);
         getScreenWidthAndHeight();
-        shotSpeed = 40;
-        enemiesSpeed = 10;
-        collisionRange = 50;
+        shotSpeed = 20 * scaleX;
+        enemiesSpeed = 1.5 * scaleX;
+        collisionRange = 50 * scaleX;
 
         frequencyCounter = 0;
         enemyFrequency = 2;
 
         player = {
-            x: 300,
-            y: 450,
-            width: 50,
-            height: 10
-        };
+            x: 300 * scaleX,
+            y: 450 * scaleY,
+            width: 25 * scaleX,
+            height: 25 * scaleY
+        };        
 
         //Canvas Initialization
         canvas = document.getElementById("cnv");
         canvas.height = screenHeight;
         canvas.width = screenWidth;
+        //canvas.height = DEFAULT_HEIGHT;
+        //canvas.width = DEFAULT_WIDTH;
 
         ctx = canvas.getContext("2d");
         ctx.fillStyle = "red";
-
-        //Kinetic Initialization
-        //stage = new Kinetic.Stage({
-        //    container: 'canvas-container',
-        //    width: screenWidth,
-        //    height: screenHeight
-        //});
     }
 
     function run() {
@@ -71,51 +67,53 @@
     }
 
     function drawScreen() {
-        //KinetiJS
-        //stage.removeChildren();
+    
+        function drawEnemy(x, y) {
+            ctx.beginPath();
+            ctx.fillRect(x, y, 15 * scaleX, 15 * scaleY);
+            ctx.strokeRect(x, y, 15 * scaleX, 15 * scaleY);
+            //ctx.arc(x, y, 10 * scaleX, 0, 2 * Math.PI);
+            //ctx.fill();
+            //ctx.stroke();
+        }
 
-        //var layer = new Kinetic.Layer();
-        //for (var i = 0; i < enemies.length; i++) {
-        //    var c = new Kinetic.Circle({
-        //        x: enemies[i].x,
-        //        y: enemies[i].y,
-        //        radius: 10,
-        //        fill: 'black'
-        //    });
-        //    layer.add(c);
-        //}
-        //stage.add(layer);
+        function drawShot(x, y) {
+            ctx.beginPath();
+            ctx.arc(x, y, 2 * scaleX, 0, 2 * Math.PI);
+            ctx.fill();
+        }
 
-        //Canvas
-        //Draw Enemies
+        function drawPlayer(x, y) {
+            ctx.beginPath();
+            ctx.fillStyle = "blue";
+            ctx.fillRect(x, y, 30 * scaleX, 30 * scaleY);
+            ctx.strokeRect(x, y, 30 * scaleX, 30 * scaleY);
+        }
+        
+        //Clear screen
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        //Draw enemies
+        ctx.strokeStyle = 'black';
         ctx.fillStyle = "red";
         for (var i = 0; i < enemies.length; i++) {
             var x = enemies[i].x;
             var y = enemies[i].y;
-            ctx.beginPath();
-            ctx.arc(x, y, 10, 0, 2 * Math.PI);
-            ctx.fill();
+            drawEnemy(x, y);            
         }
 
         //Draw Shots
         ctx.fillStyle = "black";
-        for (var i = 0; i < shots.length; i++) {
-            ctx.beginPath();
-            ctx.arc(shots[i].currentX, shots[i].currentY, 2, 0, 2 * Math.PI);
-            ctx.fill();
+        for (i = 0; i < shots.length; i++) {
+            drawShot(shots[i].currentX, shots[i].currentY)            
         }
-
-
-        //Draw Player
-        ctx.beginPath();
-        ctx.fillStyle = "blue";
-        ctx.fillRect(player.x, player.y, 30, 30);
+        
+        drawPlayer(player.x, player.y)
     }
 
     function Enemy() {
         this.x = Math.random() * screenWidth;
-        this.y = 0;
+        this.y = -30;
         this.allTypes = ["firstKind", "secondKind", "thirdKind"];
         this.allTypesLength = this.allTypes.length;
         this.type = this.allTypes[Math.floor(Math.random() * this.allTypesLength)];
@@ -134,9 +132,13 @@
             //IE 4 compatible
             screenWidth = document.body.clientWidth;
             screenHeight = document.body.clientHeight;
-        }
+        }        
         screenWidth -= 50;
         screenHeight -= 50;
+        //screenWidth = 1024;
+        //screenHeight = 768;
+        scaleX = screenWidth / DEFAULT_WIDTH;
+        scaleY = screenHeight / DEFAULT_HEIGHT;
     }
 
     function setGameDifficulty(difficulty) {
@@ -173,9 +175,11 @@
 
     function moveEnemies(speed) {
         for (var i = 0; i < enemies.length ; i++) {
-            enemies[i].y += speed;
+            enemies[i].y += speed;            
             if (enemies[i].y >= screenHeight) {
                 enemies.splice(i, 1);
+                //console.log(enemies[i].y);
+                //console.log(player.y);
             }
 
             //Enemy hit the player
@@ -191,22 +195,22 @@
         switch (event.keyCode) {
             //move left
             case 37: {
-                player.x -= 30;
+                player.x -= 8 * scaleX;
                 break;
             }
                 //move right
             case 39: {
-                player.x += 30;
+                player.x += 8 * scaleX;
                 break;
             }
                 //move up
             case 38: {
-                player.y -= 30;
+                player.y -= 8 * scaleY;
                 break;
             }
                 //move down
             case 40: {
-                player.y += 30;
+                player.y += 8 * scaleY;
                 break;
             }
         }
@@ -214,8 +218,8 @@
     }
 
     function Shot(targetPosition) {
-        this.playerX = player.x;
-        this.playerY = player.y;
+        this.playerX = player.x + (player.width / 2);
+        this.playerY = player.y + (player.height / 2);
         this.targetX = targetPosition.x;
         this.targetY = targetPosition.y;
         this.currentX = this.playerX;
@@ -264,9 +268,9 @@
                 shots[i].currentX >= screenWidth || shots[i].currentX < 0) {
                 shots.splice(i, 1);
             }
-            if (isCollisionDetected(shots[i])) {
+            else if (isCollisionDetected(shots[i])) {
                 shots.splice(i, 1);
-            } 
+            }
         }
     }
 

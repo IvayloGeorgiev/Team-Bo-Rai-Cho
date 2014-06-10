@@ -60,7 +60,7 @@
     <Content Include="scripts\kinetic-v5.1.0.min.js" />
     <Content Include="scripts\space-fighter-engine.js" />
     <Content Include="Space-Fighter.html" />
-    <Content Include="styles\start-game.css" />
+    <Content Include="styles\main-style.css" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
