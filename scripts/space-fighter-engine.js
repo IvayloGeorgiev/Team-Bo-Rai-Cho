@@ -17,7 +17,8 @@
         scaleY = 1,
         images = {},
         DEFAULT_WIDTH,
-        DEFAULT_HEIGHT;
+        DEFAULT_HEIGHT,
+        keyMap = { 37: false, 38: false, 39: false, 40: false };
 
     initialize();
 
@@ -25,6 +26,7 @@
 
     function initialize() {
         document.body.addEventListener("keydown", movePlayer);
+        document.body.addEventListener("keyup", keyUpHandler);        
         document.body.addEventListener('click', shootEnemy);
         getScreenWidthAndHeight();
         shotSpeed = 20 * scaleX;
@@ -40,7 +42,7 @@
             y: 450 * scaleY,
             width: 48 * scaleX,
             height: 48 * scaleY
-        };        
+        };
 
         //Canvas Initialization
         canvas = document.getElementById("cnv");
@@ -73,7 +75,7 @@
             player: '../images/ship.png',
             asteroid: '../images/asteroid.png'
         }
-        
+
         for (var src in sources) {
             images[src] = new Image();
             images[src].src = sources[src];
@@ -81,7 +83,7 @@
     }
 
     function drawScreen() {
-    
+
         function drawEnemy(x, y, width, height) {
             /*
             ctx.beginPath();
@@ -93,7 +95,7 @@
             ctx.drawImage(images.asteroid, x, y, width * scaleX, height * scaleY);
         }
 
-        function drawShot(x, y, width) {            
+        function drawShot(x, y, width) {
             ctx.beginPath();
             ctx.arc(x + width / 2, y + width / 2, (width / 4) * scaleX, 0, 4 * Math.PI);
             ctx.fill();
@@ -106,7 +108,7 @@
             ctx.strokeRect(x, y, 30 * scaleX, 30 * scaleY);*/
             ctx.drawImage(images.player, x, y, width * scaleX, height * scaleY);
         }
-        
+
         //Clear screen
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -116,15 +118,15 @@
         for (var i = 0; i < enemies.length; i++) {
             var x = enemies[i].x;
             var y = enemies[i].y;
-            drawEnemy(x, y, enemies[i].width, enemies[i].height);            
+            drawEnemy(x, y, enemies[i].width, enemies[i].height);
         }
 
         //Draw Shots
         ctx.fillStyle = "black";
         for (i = 0; i < shots.length; i++) {
-            drawShot(shots[i].currentX, shots[i].currentY, shots[i].width)            
+            drawShot(shots[i].currentX, shots[i].currentY, shots[i].width)
         }
-        
+
         drawPlayer(player.x, player.y, player.width, player.height);
     }
 
@@ -154,7 +156,7 @@
         }
         console.log(window.screen.width + ' ' + window.screen.height);
         screenWidth -= 24;
-        screenHeight -= 24;        
+        screenHeight -= 24;
         //screenWidth = 1600;
         //screenHeight = 1200;
         setScale(screenWidth, screenHeight);
@@ -184,11 +186,11 @@
                 closestRatio = i;
                 closestDifference = tempDifference;
             }
-        }        
+        }
 
         DEFAULT_HEIGHT = defaultRatios[closestRatio][2][1];
         DEFAULT_WIDTH = defaultRatios[closestRatio][2][0];
-    }    
+    }
 
     function setGameDifficulty(difficulty) {
         //var easy = document.getElementById("easy");
@@ -224,7 +226,7 @@
 
     function moveEnemies(speed) {
         for (var i = 0; i < enemies.length ; i++) {
-            enemies[i].y += speed;            
+            enemies[i].y += speed;
             if (enemies[i].y >= screenHeight) {
                 enemies.splice(i, 1);
                 //console.log(enemies[i].y);
@@ -240,30 +242,46 @@
         }
     }
 
-    function movePlayer(event) {
-        switch (event.keyCode) {
-            //move left
-            case 37: {
+    function movePlayer(event) {        
+        if (event.keyCode in keyMap) {
+            keyMap[event.keyCode] = true;
+            if (keyMap[37] && keyMap[38]) {
+                //move up-left
                 player.x -= 8 * scaleX;
-                break;
-            }
-                //move right
-            case 39: {
-                player.x += 8 * scaleX;
-                break;
-            }
-                //move up
-            case 38: {
                 player.y -= 8 * scaleY;
-                break;
-            }
-                //move down
-            case 40: {
+            } else if (keyMap[38] && keyMap[39]) {
+                //move up-right
+                player.y -= 8 * scaleY;
+                player.x += 8 * scaleX;
+            } else if (keyMap[37] && keyMap[40]) {
+                //move down-left
+                player.x -= 8 * scaleX;
                 player.y += 8 * scaleY;
-                break;
+            } else if (keyMap[39] && keyMap[40]) {
+                //move down-right
+                player.x += 8 * scaleX;
+                player.y += 8 * scaleY;
+            } else if (keyMap[37]) {
+                //move left
+                player.x -= 8 * scaleX;
+            } else if (keyMap[38]) {
+                //move up
+                player.y -= 8 * scaleY;
+            } else if (keyMap[39]) {
+                //move right
+                player.x += 8 * scaleX;
+            } else if (keyMap[40]) {
+                //move down
+                player.y += 8 * scaleY;
             }
         }
         drawScreen();
+    }
+
+    function keyUpHandler(e) {
+        if (e.keyCode in keyMap) {
+            keyMap[e.keyCode] = false;
+        }
     }
 
     function Shot(targetPosition) {
@@ -331,7 +349,7 @@
                 if ((currentShot.currentX < (enemies[i].x + enemies[i].width) &&
                     (currentShot.currentX + currentShot.width) > enemies[i].x) &&
                     (currentShot.currentY < (enemies[i].y + enemies[i].height) &&
-                    (currentShot.currentY + currentShot.height) > enemies[i].y)) {                    
+                    (currentShot.currentY + currentShot.height) > enemies[i].y)) {
                     enemies.splice(i, 1);
                     return true;
                 }
