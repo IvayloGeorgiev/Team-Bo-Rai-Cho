@@ -15,8 +15,9 @@
         ctx,
         scaleX = 1,
         scaleY = 1,
-        DEFAULT_WIDTH = 1024,
-        DEFAULT_HEIGHT = 768;
+        images = {},
+        DEFAULT_WIDTH,
+        DEFAULT_HEIGHT;
 
     initialize();
 
@@ -32,12 +33,13 @@
 
         frequencyCounter = 0;
         enemyFrequency = 2;
+        loadImages();
 
         player = {
             x: 300 * scaleX,
             y: 450 * scaleY,
-            width: 25 * scaleX,
-            height: 25 * scaleY
+            width: 48 * scaleX,
+            height: 48 * scaleY
         };        
 
         //Canvas Initialization
@@ -66,15 +68,29 @@
         }
     }
 
+    function loadImages() {
+        var sources = {
+            player: '../images/ship.png',
+            asteroid: '../images/asteroid.png'
+        }
+        
+        for (var src in sources) {
+            images[src] = new Image();
+            images[src].src = sources[src];
+        }
+    }
+
     function drawScreen() {
     
-        function drawEnemy(x, y) {
+        function drawEnemy(x, y, width, height) {
+            /*
             ctx.beginPath();
             ctx.fillRect(x, y, 20 * scaleX, 20 * scaleY);
-            ctx.strokeRect(x, y, 20 * scaleX, 20 * scaleY);
+            ctx.strokeRect(x, y, 20 * scaleX, 20 * scaleY);*/
             //ctx.arc(x, y, 10 * scaleX, 0, 2 * Math.PI);
             //ctx.fill();
             //ctx.stroke();
+            ctx.drawImage(images.asteroid, x, y, width * scaleX, height * scaleY);
         }
 
         function drawShot(x, y, width) {            
@@ -83,11 +99,12 @@
             ctx.fill();
         }
 
-        function drawPlayer(x, y) {
-            ctx.beginPath();
+        function drawPlayer(x, y, width, height) {
+            /*ctx.beginPath();
             ctx.fillStyle = "blue";
             ctx.fillRect(x, y, 30 * scaleX, 30 * scaleY);
-            ctx.strokeRect(x, y, 30 * scaleX, 30 * scaleY);
+            ctx.strokeRect(x, y, 30 * scaleX, 30 * scaleY);*/
+            ctx.drawImage(images.player, x, y, width * scaleX, height * scaleY);
         }
         
         //Clear screen
@@ -99,7 +116,7 @@
         for (var i = 0; i < enemies.length; i++) {
             var x = enemies[i].x;
             var y = enemies[i].y;
-            drawEnemy(x, y);            
+            drawEnemy(x, y, enemies[i].width, enemies[i].height);            
         }
 
         //Draw Shots
@@ -108,14 +125,14 @@
             drawShot(shots[i].currentX, shots[i].currentY, shots[i].width)            
         }
         
-        drawPlayer(player.x, player.y)
+        drawPlayer(player.x, player.y, player.width, player.height);
     }
 
     function Enemy() {
         this.x = Math.random() * screenWidth;
         this.y = -30 * scaleY;
-        this.width = 20 * scaleX;
-        this.height = 20 * scaleY;
+        this.width = 48 * scaleX;
+        this.height = 48 * scaleY;
         this.allTypes = ["firstKind", "secondKind", "thirdKind"];
         this.allTypesLength = this.allTypes.length;
         this.type = this.allTypes[Math.floor(Math.random() * this.allTypesLength)];
@@ -134,14 +151,44 @@
             //IE 4 compatible
             screenWidth = document.body.clientWidth;
             screenHeight = document.body.clientHeight;
-        }        
+        }
+        console.log(window.screen.width + ' ' + window.screen.height);
         screenWidth -= 24;
-        screenHeight -= 24;
+        screenHeight -= 24;        
         //screenWidth = 1600;
         //screenHeight = 1200;
+        setScale(screenWidth, screenHeight);
         scaleX = screenWidth / DEFAULT_WIDTH;
         scaleY = screenHeight / DEFAULT_HEIGHT;
+        console.log(scaleX + ' ' + scaleY);
     }
+
+    function setScale(w, h) {
+        var defaultRatios = [[4, 3, [1024, 768]], [16, 9, [1366, 768]], [3, 2, [1152, 768]], [5, 3, [1280, 768]], [8, 5, [1280, 800]]],
+            closestRatio,
+            closestDifference = Number.MAX_VALUE,
+            tempWidth,
+            tempHeight,
+            tempDifference;
+
+        console.log('hai');
+        for (var i = 0, length = defaultRatios.length; i < length; i++) {
+            tempWidth = w / defaultRatios[i][0];
+            tempHeight = h / defaultRatios[i][1];
+            tempDifference = Math.abs(tempWidth - tempHeight);
+
+            if (tempDifference === 0) {
+                closestRatio = i;
+                break;
+            } else if (tempDifference < closestDifference) {
+                closestRatio = i;
+                closestDifference = tempDifference;
+            }
+        }        
+
+        DEFAULT_HEIGHT = defaultRatios[closestRatio][2][1];
+        DEFAULT_WIDTH = defaultRatios[closestRatio][2][0];
+    }    
 
     function setGameDifficulty(difficulty) {
         //var easy = document.getElementById("easy");

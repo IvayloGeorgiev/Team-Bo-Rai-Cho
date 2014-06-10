@@ -57,6 +57,8 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="images\asteroid.png" />
+    <Content Include="images\ship.png" />
     <Content Include="scripts\kinetic-v5.1.0.min.js" />
     <Content Include="scripts\space-fighter-engine.js" />
     <Content Include="Space-Fighter.html" />
