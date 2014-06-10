@@ -70,16 +70,16 @@
     
         function drawEnemy(x, y) {
             ctx.beginPath();
-            ctx.fillRect(x, y, 15 * scaleX, 15 * scaleY);
-            ctx.strokeRect(x, y, 15 * scaleX, 15 * scaleY);
+            ctx.fillRect(x, y, 20 * scaleX, 20 * scaleY);
+            ctx.strokeRect(x, y, 20 * scaleX, 20 * scaleY);
             //ctx.arc(x, y, 10 * scaleX, 0, 2 * Math.PI);
             //ctx.fill();
             //ctx.stroke();
         }
 
-        function drawShot(x, y) {
+        function drawShot(x, y, width) {            
             ctx.beginPath();
-            ctx.arc(x, y, 2 * scaleX, 0, 2 * Math.PI);
+            ctx.arc(x + width / 2, y + width / 2, (width / 4) * scaleX, 0, 4 * Math.PI);
             ctx.fill();
         }
 
@@ -105,7 +105,7 @@
         //Draw Shots
         ctx.fillStyle = "black";
         for (i = 0; i < shots.length; i++) {
-            drawShot(shots[i].currentX, shots[i].currentY)            
+            drawShot(shots[i].currentX, shots[i].currentY, shots[i].width)            
         }
         
         drawPlayer(player.x, player.y)
@@ -113,7 +113,9 @@
 
     function Enemy() {
         this.x = Math.random() * screenWidth;
-        this.y = -30;
+        this.y = -30 * scaleY;
+        this.width = 20 * scaleX;
+        this.height = 20 * scaleY;
         this.allTypes = ["firstKind", "secondKind", "thirdKind"];
         this.allTypesLength = this.allTypes.length;
         this.type = this.allTypes[Math.floor(Math.random() * this.allTypesLength)];
@@ -133,10 +135,10 @@
             screenWidth = document.body.clientWidth;
             screenHeight = document.body.clientHeight;
         }        
-        screenWidth -= 50;
-        screenHeight -= 50;
-        //screenWidth = 1024;
-        //screenHeight = 768;
+        screenWidth -= 24;
+        screenHeight -= 24;
+        //screenWidth = 1600;
+        //screenHeight = 1200;
         scaleX = screenWidth / DEFAULT_WIDTH;
         scaleY = screenHeight / DEFAULT_HEIGHT;
     }
@@ -224,6 +226,8 @@
         this.targetY = targetPosition.y;
         this.currentX = this.playerX;
         this.currentY = this.playerY;
+        this.width = 8 * scaleX;
+        this.height = 8 * scaleY;
         this.updatePosition = function (shotSpeed) {
             var deltaX = this.targetX - this.playerX;
             var deltaY = this.targetY - this.playerY;
@@ -276,11 +280,20 @@
 
     function isCollisionDetected(currentShot) {
         for (var i = 0; i < enemies.length; i++) {
-            if (Math.abs(currentShot.currentX - enemies[i].x) < collisionRange &&
-                Math.abs(currentShot.currentY - enemies[i].y) < collisionRange) {
-                enemies.splice(i, 1);
-                return true;
+            for (var j = 0, movementSquares = shotSpeed / currentShot.width; j < movementSquares; j++) {
+                if ((currentShot.currentX < (enemies[i].x + enemies[i].width) &&
+                    (currentShot.currentX + currentShot.width) > enemies[i].x) &&
+                    (currentShot.currentY < (enemies[i].y + enemies[i].height) &&
+                    (currentShot.currentY + currentShot.height) > enemies[i].y)) {                    
+                    enemies.splice(i, 1);
+                    return true;
+                }
             }
+            //if (Math.abs(currentShot.currentX - enemies[i].x) < collisionRange &&
+            //    Math.abs(currentShot.currentY - enemies[i].y) < collisionRange) {
+            //    enemies.splice(i, 1);
+            //    return true;
+            //}
         }
         return false;
     }
