@@ -58,8 +58,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="images\asteroid.png" />
+    <Content Include="images\outerSpace.jpg" />
+    <Content Include="images\outerSpaceFlipped.jpg" />
     <Content Include="images\rightComet.png" />
     <Content Include="images\ship.png" />
+    <Content Include="scripts\background.js" />
     <Content Include="scripts\jquery-2.1.1.min.js" />
     <Content Include="scripts\kinetic-v5.1.0.min.js" />
     <Content Include="scripts\space-fighter-engine.js" />

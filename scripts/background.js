@@ -30,14 +30,17 @@
     frame1.src = frame1Url;
     frame2.src = frame2Url;
 
-    var frame1Image = paper.image(frame1Url, x, y - frame1.height * 2, width, frame1.height);
-    var frame2Image = paper.image(frame2Url, x, y - frame2.height, width, frame2.height);
-    var frame3Image = paper.image(frame1Url, x, y, width, frame1.height);
+    // Apparently Chrome does not work with fram1.height... This is a fix for Chrome
+    var frameHeight = 1920;
+
+    var frame1Image = paper.image(frame1Url, x, y - frameHeight * 2, width, frameHeight);
+    var frame2Image = paper.image(frame2Url, x, y - frameHeight, width, frameHeight);
+    var frame3Image = paper.image(frame1Url, x, y, width, frameHeight);
 
     var time = 300000;
-    var frame1Anim = Raphael.animation({ x: 0, y: frame1.height - frame1.height }, time);
-    var frame2Anim = Raphael.animation({ x: 0, y: frame2.height }, time);
-    var frame3Anim = Raphael.animation({ x: 0, y: frame1.height * 2 }, time);
+    var frame1Anim = Raphael.animation({ x: 0, y: frameHeight - frameHeight }, time);
+    var frame2Anim = Raphael.animation({ x: 0, y: frameHeight }, time);
+    var frame3Anim = Raphael.animation({ x: 0, y: frameHeight * 2 }, time);
 
 
     frame1Image.animate(frame1Anim.repeat(Infinity), '<>');
