@@ -46,13 +46,9 @@
             y: 450 * scaleY,
             width: 48 * scaleX,
             height: 48 * scaleY
-<<<<<<< HEAD
         };        
         
-=======
-        };
 
->>>>>>> origin/master
         //Canvas Initialization
         canvas = document.getElementById("cnv");
         canvas.height = screenHeight;
@@ -116,7 +112,7 @@
             ctx.drawImage(images.asteroid, x, y, width * scaleX, height * scaleY);
         }
 
-<<<<<<< HEAD
+
         function drawComet(x, y, width, height) {
             //ctx.beginPath();
             //ctx.fillStyle = '#00f';
@@ -126,10 +122,10 @@
             ctx.drawImage(images.comet, x, y, width * scaleX * 3, height * scaleY * 3);
         }
 
-        function drawShot(x, y, width) {            
-=======
+         
+
         function drawShot(x, y, width) {
->>>>>>> origin/master
+
             ctx.beginPath();
             ctx.arc(x + width / 2, y + width / 2, (width / 4) * scaleX, 0, 4 * Math.PI);
             ctx.fill();
@@ -287,7 +283,7 @@
         }
     }
 
-<<<<<<< HEAD
+
     function moveComet(speed) {
         if (comet !== undefined) {
             comet.y -= speed;
@@ -295,17 +291,11 @@
         }
     }
 
-    function movePlayer(event) {
-        switch (event.keyCode) {
-            //move left
-            case 37: {
-=======
     function movePlayer(event) {        
         if (event.keyCode in keyMap) {
             keyMap[event.keyCode] = true;
             if (keyMap[37] && keyMap[38]) {
                 //move up-left
->>>>>>> origin/master
                 player.x -= 8 * scaleX;
                 player.y -= 8 * scaleY;
             } else if (keyMap[38] && keyMap[39]) {
