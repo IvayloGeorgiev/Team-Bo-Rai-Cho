@@ -13,4 +13,10 @@
 #cnv {
     position: relative;
     border:1px solid black;
+    cursor: url(../images/crosshaircyan.png), auto;
+
+}
+
+canvas {
+
 }

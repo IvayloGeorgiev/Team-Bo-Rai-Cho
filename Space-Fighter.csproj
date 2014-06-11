@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="images\asteroid.png" />
+    <Content Include="images\crosshaircyan.png" />
     <Content Include="images\outerSpace.jpg" />
     <Content Include="images\outerSpaceFlipped.jpg" />
     <Content Include="images\rightComet.png" />
