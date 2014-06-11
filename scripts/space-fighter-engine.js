@@ -5,6 +5,7 @@
         enemiesSpeed,
         shots = [],
         player,
+        comet,
         screenWidth,
         screenHeight,
         frequencyCounter,
@@ -29,10 +30,13 @@
         getScreenWidthAndHeight();
         shotSpeed = 20 * scaleX;
         enemiesSpeed = 1.5 * scaleX;
+        cometSpeed = 6 * scaleX;
         collisionRange = 50 * scaleX;
 
         frequencyCounter = 0;
         enemyFrequency = 2;
+        cometFrequencyCounter = 0;
+        cometFrequency = 50;
         loadImages();
 
         player = {
@@ -41,7 +45,7 @@
             width: 48 * scaleX,
             height: 48 * scaleY
         };        
-
+        
         //Canvas Initialization
         canvas = document.getElementById("cnv");
         canvas.height = screenHeight;
@@ -58,11 +62,22 @@
             enemies.push(new Enemy());
         }
 
+        if (cometFrequencyCounter === cometFrequency) {
+            cometFrequencyCounter = 0;
+
+            if (comet === undefined || comet.x < 1 || comet.y < 1) {
+                comet = new Comet();
+            }
+        }
+
         moveShots(shotSpeed);
         moveEnemies(enemiesSpeed);
+        moveComet(cometSpeed);
+
         drawScreen();
 
         frequencyCounter++;
+        cometFrequencyCounter++;
         if (frequencyCounter > enemyFrequency) {
             frequencyCounter = 0;
         }
@@ -71,7 +86,8 @@
     function loadImages() {
         var sources = {
             player: '../images/ship.png',
-            asteroid: '../images/asteroid.png'
+            asteroid: '../images/asteroid.png',
+            comet: '../images/rightComet.png'
         }
         
         for (var src in sources) {
@@ -91,6 +107,15 @@
             //ctx.fill();
             //ctx.stroke();
             ctx.drawImage(images.asteroid, x, y, width * scaleX, height * scaleY);
+        }
+
+        function drawComet(x, y, width, height) {
+            //ctx.beginPath();
+            //ctx.fillStyle = '#00f';
+            //ctx.arc(x, y, r, 0, 2 * Math.PI);
+            //ctx.fill();
+            //ctx.stroke();
+            ctx.drawImage(images.comet, x, y, width * scaleX * 3, height * scaleY * 3);
         }
 
         function drawShot(x, y, width) {            
@@ -126,6 +151,10 @@
         }
         
         drawPlayer(player.x, player.y, player.width, player.height);
+
+        if (comet !== undefined) {
+            drawComet(comet.x, comet.y, comet.width, comet.height);
+        }
     }
 
     function Enemy() {
@@ -137,6 +166,13 @@
         this.allTypesLength = this.allTypes.length;
         this.type = this.allTypes[Math.floor(Math.random() * this.allTypesLength)];
     };
+
+    function Comet() {
+        this.x = screenWidth;
+        this.y = screenHeight;
+        this.width = 20;
+        this.height = 20;
+    }
 
     function getScreenWidthAndHeight() {
         if (typeof (window.innerWidth) == 'number') {
@@ -237,6 +273,13 @@
             //    enemies.splice(i, 1);
             //    gameOver();
             //}                
+        }
+    }
+
+    function moveComet(speed) {
+        if (comet !== undefined) {
+            comet.y -= speed;
+            comet.x -= speed * 2;
         }
     }
 
