@@ -1,6 +1,6 @@
 ﻿/// <reference path="kinetic-v5.1.0.min.js" />
 
-(function () {
+function engine() {
     var enemies = [],
         enemiesSpeed,
         shots = [],
@@ -143,7 +143,7 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         //Draw enemies
-        ctx.strokeStyle = 'black';
+        ctx.strokeStyle = 'yellow';
         ctx.fillStyle = "red";
         for (var i = 0; i < enemies.length; i++) {
             var x = enemies[i].x;
@@ -152,7 +152,7 @@
         }
 
         //Draw Shots
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "yellow";
         for (i = 0; i < shots.length; i++) {
             drawShot(shots[i].currentX, shots[i].currentY, shots[i].width)
         }
@@ -411,4 +411,4 @@
         }
         return false;
     }
-})();
+}
