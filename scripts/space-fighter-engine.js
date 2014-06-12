@@ -39,7 +39,7 @@ function engine() {
         collisionRange = 50 * scaleX;
 
         frequencyCounter = 0;
-        enemyFrequency = 2;
+        enemyFrequency = 50;
         cometFrequencyCounter = 0;
         cometFrequency = 50;
         loadImages();
