@@ -1,4 +1,6 @@
-$(document).ready(function() {
+startScreen();
+
+function startScreen () {    
     var $wrapper = $('<div id="wrapper"></div>');
     //$("#canvas-container").append($wrapper);
     $('body').append($wrapper);
@@ -43,5 +45,5 @@ $(document).ready(function() {
     $startGameButton.click(function () {
         $wrapper.remove();
         engine();
-    });
-});
+    });    
+};

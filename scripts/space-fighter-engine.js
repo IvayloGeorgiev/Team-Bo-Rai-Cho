@@ -1,4 +1,5 @@
 ﻿/// <reference path="kinetic-v5.1.0.min.js" />
+/// <reference path="start-screen.js" />
 
 function engine() {
     var enemies = [],
@@ -19,15 +20,17 @@ function engine() {
         images = {},
         DEFAULT_WIDTH,
         DEFAULT_HEIGHT,
-        keyMap = { 37: false, 38: false, 39: false, 40: false };
+        keyMap = { 37: false, 38: false, 39: false, 40: false },
+        isPlayerDead = false;
 
     initialize();
 
-    setInterval(run, 20);
+    setTimeout(run, 20);
+    
 
     function initialize() {
         document.body.addEventListener("keydown", movePlayer);
-        document.body.addEventListener("keyup", keyUpHandler);        
+        document.body.addEventListener("keyup", keyUpHandler);
         document.body.addEventListener('click', shootEnemy);
         getScreenWidthAndHeight();
         shotSpeed = 20 * scaleX;
@@ -46,8 +49,9 @@ function engine() {
             y: 450 * scaleY,
             width: 48 * scaleX,
             height: 48 * scaleY
-        };        
-        
+        };
+
+        enemies = [];
 
         //Canvas Initialization
         canvas = document.getElementById("cnv");
@@ -61,6 +65,12 @@ function engine() {
     }
 
     function run() {
+        if (isPlayerDead) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            startScreen();
+            initialize();
+            return;
+        }
         if (frequencyCounter == enemyFrequency) {
             enemies.push(new Enemy());
         }
@@ -84,6 +94,7 @@ function engine() {
         if (frequencyCounter > enemyFrequency) {
             frequencyCounter = 0;
         }
+        setTimeout(run, 20);
     }
 
     function loadImages() {
@@ -122,7 +133,7 @@ function engine() {
             ctx.drawImage(images.comet, x, y, width * scaleX * 3, height * scaleY * 3);
         }
 
-         
+
 
         function drawShot(x, y, width) {
 
@@ -275,11 +286,10 @@ function engine() {
             }
 
             //Enemy hit the player
-            //if (enemies[i].x >= (player.x - player.width) && enemies[i].x <= (player.x + player.width)
-            //    && enemies[i].y > (player.y - player.height)) {
-            //    enemies.splice(i, 1);
-            //    gameOver();
-            //}                
+            if (enemies[i].x >= (player.x - player.width) && enemies[i].x <= (player.x + player.width)
+                && enemies[i].y > (player.y - player.height)) {                
+                isPlayerDead = true;                                
+            }                
         }
     }
 
@@ -291,7 +301,7 @@ function engine() {
         }
     }
 
-    function movePlayer(event) {        
+    function movePlayer(event) {
         if (event.keyCode in keyMap) {
             keyMap[event.keyCode] = true;
             if (keyMap[37] && keyMap[38]) {
