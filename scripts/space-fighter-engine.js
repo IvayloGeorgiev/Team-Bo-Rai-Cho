@@ -20,7 +20,7 @@ function engine() {
         images = {},
         DEFAULT_WIDTH,
         DEFAULT_HEIGHT,
-        keyMap = { 37: false, 38: false, 39: false, 40: false },
+        keyMap = { 87: false, 65: false, 68: false, 83: false },
         isPlayerDead = false;
 
     initialize();
@@ -304,32 +304,32 @@ function engine() {
     function movePlayer(event) {
         if (event.keyCode in keyMap) {
             keyMap[event.keyCode] = true;
-            if (keyMap[37] && keyMap[38]) {
+            if (keyMap[65] && keyMap[87]) {
                 //move up-left
                 player.x -= 8 * scaleX;
                 player.y -= 8 * scaleY;
-            } else if (keyMap[38] && keyMap[39]) {
+            } else if (keyMap[87] && keyMap[68]) {
                 //move up-right
                 player.y -= 8 * scaleY;
                 player.x += 8 * scaleX;
-            } else if (keyMap[37] && keyMap[40]) {
+            } else if (keyMap[65] && keyMap[83]) {
                 //move down-left
                 player.x -= 8 * scaleX;
                 player.y += 8 * scaleY;
-            } else if (keyMap[39] && keyMap[40]) {
+            } else if (keyMap[83] && keyMap[68]) {
                 //move down-right
                 player.x += 8 * scaleX;
                 player.y += 8 * scaleY;
-            } else if (keyMap[37]) {
+            } else if (keyMap[65]) {
                 //move left
                 player.x -= 8 * scaleX;
-            } else if (keyMap[38]) {
+            } else if (keyMap[87]) {
                 //move up
                 player.y -= 8 * scaleY;
-            } else if (keyMap[39]) {
+            } else if (keyMap[68]) {
                 //move right
                 player.x += 8 * scaleX;
-            } else if (keyMap[40]) {
+            } else if (keyMap[83]) {
                 //move down
                 player.y += 8 * scaleY;
             }
