@@ -34,7 +34,7 @@ function engine() {
         frequencyCounter = 0;
         enemyFrequency = 1;
         cometFrequencyCounter = 0;
-        cometFrequency = 1.5;
+        cometFrequency = 1;
         loadImages();
         
         player = {
@@ -102,7 +102,8 @@ function engine() {
         var sources = {
             player: 'images/ship.png',
             asteroid: 'images/asteroid.png',
-            comet: 'images/rightComet.png'
+            rightComet: 'images/rightComet.png',
+            leftComet: 'images/leftComet.png'
         }
 
         for (var src in sources) {
@@ -123,13 +124,13 @@ function engine() {
         }
 
 
-        function drawComet(x, y, width, height) {
-            //ctx.beginPath();
-            //ctx.fillStyle = '#00f';
-            //ctx.arc(x, y, r, 0, 2 * Math.PI);
-            //ctx.fill();
-            //ctx.stroke();
-            ctx.drawImage(images.comet, x, y, width * 3, height * 3);
+        function drawComet(x, y, width, height, direction) {
+            ctx.drawImage(direction === 'left' ? images.rightComet : images.leftComet, x, y, width * 3, height * 3);
+            // ctx.beginPath();
+            // ctx.fillStyle = '#00f';
+            // ctx.fillRect(direction === 'left' ? x : x + (width * scaleX), y, width, height);
+            // ctx.fill();
+            // ctx.stroke();
         }
 
 
@@ -175,7 +176,7 @@ function engine() {
         drawPlayer(player.x, player.y, player.width, player.height, player.modelScale);
 
         if (comet !== undefined) {
-            drawComet(comet.x, comet.y, comet.width, comet.height);
+            drawComet(comet.x, comet.y, comet.width, comet.height, comet.direction);
         }
     }
 
@@ -192,11 +193,17 @@ function engine() {
     };
 
     function Comet() {
-        this.x = screenWidth;
+        if (Math.random() > 0.5) {
+            this.x = (screenWidth / 2) + (screenWidth * Math.random());
+            this.direction = 'left';
+        } else {
+            this.x = (screenWidth / 2) - (screenWidth * Math.random());
+            this.direction = 'right';
+        }
         this.y = screenHeight;
-        this.width = 20 * scaleX;
-        this.height = 20 * scaleY;
-        this.speed = 600;
+        this.width = 25 * scaleX;
+        this.height = 25 * scaleY;
+        this.speed = 300;
     }
 
     function getScreenWidthAndHeight() {
@@ -282,16 +289,33 @@ function engine() {
                 enemies[i].x + enemies[i].width > player.x &&
                 enemies[i].y < player.y + player.height &&
                 enemies[i].y + enemies[i].height > player.y) {
-                isPlayerDead = true;                
+                isPlayerDead = true;
             }
         }
     }
 
 
     function moveComet() {
-        if (comet !== undefined) {
+        if (comet === undefined) {
+            return;
+        }
+
+        if (comet.direction === 'left') {
             comet.y -= comet.speed * delta;
             comet.x -= (comet.speed * 2) * delta;
+        } else {
+            comet.y -= comet.speed * delta;
+            comet.x += (comet.speed * 2) * delta;
+        }
+
+        if (isCollidedWithObject(comet, player)) {
+            isPlayerDead = true;
+        }
+
+        for (var i = 0; i < enemies.length; i++) {
+            if (isCollidedWithObject(comet, enemies[i])) {
+                enemies.splice(i, 1);
+            }
         }
     }
 
@@ -398,6 +422,27 @@ function engine() {
             //    return true;
             //}
         }
+        return false;
+    }
+
+    function isCollidedWithObject(comet, gameObject) {
+        if (comet === undefined) {
+            return false;
+        }
+
+        var cometFocusAccuracy = comet.direction === 'left' ? 0 : comet.width * scaleX;
+
+        var isCometXInObject = ((comet.x + cometFocusAccuracy) > gameObject.x && (comet.x + cometFocusAccuracy) < (gameObject.x + gameObject.height)),
+            isCometYinObject = (comet.y > gameObject.y && comet.y < (gameObject.y + gameObject.width)),
+            isObjectXInComet = (gameObject.x > (comet.x + cometFocusAccuracy) && gameObject.x < (comet.x + cometFocusAccuracy + comet.width)),
+            isObjectYInComet = (gameObject.y > comet.y && gameObject.y < (comet.y + comet.height));
+
+
+        if ((isCometYinObject === true && isCometXInObject === true) ||
+            (isObjectXInComet === true && isObjectYInComet === true)) {
+            return true;
+        }
+
         return false;
     }
 }
