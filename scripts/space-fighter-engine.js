@@ -40,9 +40,10 @@ function engine() {
         player = {
             x: 300 * scaleX,
             y: 450 * scaleY,
-            width: 48 * scaleX,
-            height: 48 * scaleY,
-            speed: 300
+            width: 12 * scaleX,
+            height: 12 * scaleY,
+            speed: 700,
+            modelScale: 4 //drawing model to hitbox ratio.
         };
 
         enemies = [];
@@ -112,11 +113,13 @@ function engine() {
 
     function drawScreen() {
 
-        function drawEnemy(x, y, width, height) {
-            //ctx.beginPath();
-            //ctx.fillRect(x, y, width, height);
-            //ctx.strokeRect(x, y, width, height);
-            ctx.drawImage(images.asteroid, x, y, width, height);
+        function drawEnemy(x, y, width, height, modelScale) {
+            ctx.beginPath();
+            ctx.fillRect(x, y, width, height);
+            ctx.strokeRect(x, y, width, height);
+            var offsetX = ((modelScale - 1) / 2) * width,
+                offsetY = ((modelScale - 1) / 2) * height;
+            ctx.drawImage(images.asteroid, x - offsetX, y - offsetY, width * modelScale, height * modelScale);
         }
 
 
@@ -134,16 +137,20 @@ function engine() {
         function drawShot(x, y, size) {
             //ctx.fillRect(x, y, size, size);
             ctx.beginPath();
-            ctx.arc(x + size / 2, y + size / 2, (size / 4), 0, 4 * Math.PI);
+            ctx.arc(x + size / 4, y + size / 4, (size / 8), 0, 4 * Math.PI);
             ctx.fill();
         }
 
-        function drawPlayer(x, y, width, height) {
-            //ctx.beginPath();
-            //ctx.fillStyle = "blue";
-            //ctx.fillRect(x, y, width, height);
-            //ctx.strokeRect(x, y, width, height);
-            ctx.drawImage(images.player, x, y, width, height);
+        function drawPlayer(x, y, width, height, modelScale) {
+            
+            var offsetX = ((modelScale - 1) / 2) * width,
+                offsetY = ((modelScale - 1) / 2) * height;
+            ctx.drawImage(images.player, x - offsetX, y - offsetY, width * modelScale, height * modelScale);
+
+            ctx.beginPath();
+            ctx.fillStyle = "blue";
+            ctx.fillRect(x, y, width, height);
+            ctx.strokeRect(x, y, width, height);
             //console.log(width * scaleX, width * scaleY, width, height);            
         }
 
@@ -156,7 +163,7 @@ function engine() {
         for (var i = 0; i < enemies.length; i++) {
             var x = enemies[i].x;
             var y = enemies[i].y;
-            drawEnemy(x, y, enemies[i].width, enemies[i].height);
+            drawEnemy(x, y, enemies[i].width, enemies[i].height, enemies[i].modelScale);
         }
 
         //Draw Shots
@@ -165,7 +172,7 @@ function engine() {
             drawShot(shots[i].currentX, shots[i].currentY, shots[i].size)
         }
 
-        drawPlayer(player.x, player.y, player.width, player.height);
+        drawPlayer(player.x, player.y, player.width, player.height, player.modelScale);
 
         if (comet !== undefined) {
             drawComet(comet.x, comet.y, comet.width, comet.height);
@@ -175,8 +182,9 @@ function engine() {
     function Enemy() {
         this.x = Math.random() * screenWidth;
         this.y = -30 * scaleY;
-        this.width = 48 * scaleX;
-        this.height = 48 * scaleY;
+        this.width = 24 * scaleX;
+        this.height = 24 * scaleY;
+        this.modelScale = 2;
         this.allTypes = ["firstKind", "secondKind", "thirdKind"];
         this.allTypesLength = this.allTypes.length;
         this.type = this.allTypes[Math.floor(Math.random() * this.allTypesLength)],
@@ -321,7 +329,7 @@ function engine() {
         this.targetY = targetPosition.y;
         this.currentX = this.playerX;
         this.currentY = this.playerY;
-        this.size = 8 * scaleX;
+        this.size = 16 * scaleX;
         this.speed = 800 * ((scaleX > scaleY) ? scaleX : scaleY);
         this.updatePosition = function () {
             var deltaX = this.targetX - this.playerX;

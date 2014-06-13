@@ -2,7 +2,7 @@
 /*global window: false*/
 /*global Raphael: false*/
 /*global Image: false*/
-
+/*
 (function () {
     "use strict";
 
@@ -60,4 +60,4 @@
     frame1Image.animate(frame1Anim.repeat(Infinity), '<>');
     frame2Image.animate(frame2Anim.repeat(Infinity), '<>');
     frame3Image.animate(frame3Anim.repeat(Infinity), '<>');
-}());
+}());*/
