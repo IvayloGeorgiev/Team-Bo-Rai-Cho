@@ -38,8 +38,8 @@
     frame1 = new Image();
     frame2 = new Image();
 
-    frame1Url = '/images/outerSpace.jpg';
-    frame2Url = '/images/outerSpaceFlipped.jpg';
+    frame1Url = 'images/outerSpace.jpg';
+    frame2Url = 'images/outerSpaceFlipped.jpg';
 
     frame1.src = frame1Url;
     frame2.src = frame2Url;

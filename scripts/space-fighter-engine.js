@@ -99,9 +99,9 @@ function engine() {
 
     function loadImages() {
         var sources = {
-            player: '../images/ship.png',
-            asteroid: '../images/asteroid.png',
-            comet: '../images/rightComet.png'
+            player: 'images/ship.png',
+            asteroid: 'images/asteroid.png',
+            comet: 'images/rightComet.png'
         }
 
         for (var src in sources) {
