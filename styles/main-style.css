@@ -11,12 +11,7 @@
 }
 
 #cnv {
-    position: relative;
-    border:1px solid black;
+    position: relative;    
     cursor: url(../images/crosshaircyan.png), auto;
-
-}
-
-canvas {
 
 }

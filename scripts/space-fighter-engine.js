@@ -3,7 +3,6 @@
 
 function engine() {
     var enemies = [],
-        enemiesSpeed,
         shots = [],
         player,
         comet,
@@ -11,44 +10,39 @@ function engine() {
         screenHeight,
         frequencyCounter,
         enemyFrequency,
-        shotSpeed,
         canvas,
-        collisionRange,
+        delta,
+        lastTime,
         ctx,
-        scaleX = 1,
-        scaleY = 1,
-        images = {},
-        DEFAULT_WIDTH,
-        DEFAULT_HEIGHT,
+        scaleX,
+        scaleY,
+        images = {},        
         keyMap = { 87: false, 65: false, 68: false, 83: false },
-        isPlayerDead = false;
+        isPlayerDead;
 
     initialize();
 
-    setTimeout(run, 20);
-    
+    //setTimeout(run, 20);
 
-    function initialize() {
-        document.body.addEventListener("keydown", movePlayer);
+
+    function initialize() {        
+        document.body.addEventListener("keydown", keyDownHandler);
         document.body.addEventListener("keyup", keyUpHandler);
         document.body.addEventListener('click', shootEnemy);
-        getScreenWidthAndHeight();
-        shotSpeed = 20 * scaleX;
-        enemiesSpeed = 1.5 * scaleX;
-        cometSpeed = 6 * scaleX;
-        collisionRange = 50 * scaleX;
+        getScreenWidthAndHeight();        
 
         frequencyCounter = 0;
-        enemyFrequency = 50;
+        enemyFrequency = 1;
         cometFrequencyCounter = 0;
-        cometFrequency = 50;
+        cometFrequency = 1.5;
         loadImages();
-
+        
         player = {
             x: 300 * scaleX,
             y: 450 * scaleY,
             width: 48 * scaleX,
-            height: 48 * scaleY
+            height: 48 * scaleY,
+            speed: 300
         };
 
         enemies = [];
@@ -56,26 +50,32 @@ function engine() {
         //Canvas Initialization
         canvas = document.getElementById("cnv");
         canvas.height = screenHeight;
-        canvas.width = screenWidth;
-        //canvas.height = DEFAULT_HEIGHT;
-        //canvas.width = DEFAULT_WIDTH;
+        canvas.width = screenWidth;        
 
         ctx = canvas.getContext("2d");
         ctx.fillStyle = "red";
+        isPlayerDead = false;
+
+        lastTime = Date.now();
+        run();
     }
 
-    function run() {
-        if (isPlayerDead) {
+    function run() {        
+        if (isPlayerDead) {            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             startScreen();
-            initialize();
             return;
         }
-        if (frequencyCounter == enemyFrequency) {
+
+        var now = Date.now();
+        delta = (now - lastTime) / 1000;        
+
+        if (frequencyCounter >= enemyFrequency) {
             enemies.push(new Enemy());
+            frequencyCounter = 0;
         }
 
-        if (cometFrequencyCounter === cometFrequency) {
+        if (cometFrequencyCounter >= cometFrequency) {
             cometFrequencyCounter = 0;
 
             if (comet === undefined || comet.x < 1 || comet.y < 1) {
@@ -83,18 +83,18 @@ function engine() {
             }
         }
 
-        moveShots(shotSpeed);
-        moveEnemies(enemiesSpeed);
-        moveComet(cometSpeed);
+        moveShots();
+        moveEnemies();
+        moveComet();
+        movePlayer();
 
         drawScreen();
 
-        frequencyCounter++;
-        cometFrequencyCounter++;
-        if (frequencyCounter > enemyFrequency) {
-            frequencyCounter = 0;
-        }
-        setTimeout(run, 20);
+        frequencyCounter += delta;
+        cometFrequencyCounter += delta;
+
+        lastTime = now;
+        requestAnimationFrame(run);
     }
 
     function loadImages() {
@@ -113,14 +113,10 @@ function engine() {
     function drawScreen() {
 
         function drawEnemy(x, y, width, height) {
-            /*
-            ctx.beginPath();
-            ctx.fillRect(x, y, 20 * scaleX, 20 * scaleY);
-            ctx.strokeRect(x, y, 20 * scaleX, 20 * scaleY);*/
-            //ctx.arc(x, y, 10 * scaleX, 0, 2 * Math.PI);
-            //ctx.fill();
-            //ctx.stroke();
-            ctx.drawImage(images.asteroid, x, y, width * scaleX, height * scaleY);
+            //ctx.beginPath();
+            //ctx.fillRect(x, y, width, height);
+            //ctx.strokeRect(x, y, width, height);
+            ctx.drawImage(images.asteroid, x, y, width, height);
         }
 
 
@@ -130,24 +126,25 @@ function engine() {
             //ctx.arc(x, y, r, 0, 2 * Math.PI);
             //ctx.fill();
             //ctx.stroke();
-            ctx.drawImage(images.comet, x, y, width * scaleX * 3, height * scaleY * 3);
+            ctx.drawImage(images.comet, x, y, width * 3, height * 3);
         }
 
 
 
-        function drawShot(x, y, width) {
-
+        function drawShot(x, y, size) {
+            //ctx.fillRect(x, y, size, size);
             ctx.beginPath();
-            ctx.arc(x + width / 2, y + width / 2, (width / 4) * scaleX, 0, 4 * Math.PI);
+            ctx.arc(x + size / 2, y + size / 2, (size / 4), 0, 4 * Math.PI);
             ctx.fill();
         }
 
         function drawPlayer(x, y, width, height) {
-            /*ctx.beginPath();
-            ctx.fillStyle = "blue";
-            ctx.fillRect(x, y, 30 * scaleX, 30 * scaleY);
-            ctx.strokeRect(x, y, 30 * scaleX, 30 * scaleY);*/
-            ctx.drawImage(images.player, x, y, width * scaleX, height * scaleY);
+            //ctx.beginPath();
+            //ctx.fillStyle = "blue";
+            //ctx.fillRect(x, y, width, height);
+            //ctx.strokeRect(x, y, width, height);
+            ctx.drawImage(images.player, x, y, width, height);
+            //console.log(width * scaleX, width * scaleY, width, height);            
         }
 
         //Clear screen
@@ -165,7 +162,7 @@ function engine() {
         //Draw Shots
         ctx.fillStyle = "yellow";
         for (i = 0; i < shots.length; i++) {
-            drawShot(shots[i].currentX, shots[i].currentY, shots[i].width)
+            drawShot(shots[i].currentX, shots[i].currentY, shots[i].size)
         }
 
         drawPlayer(player.x, player.y, player.width, player.height);
@@ -182,14 +179,16 @@ function engine() {
         this.height = 48 * scaleY;
         this.allTypes = ["firstKind", "secondKind", "thirdKind"];
         this.allTypesLength = this.allTypes.length;
-        this.type = this.allTypes[Math.floor(Math.random() * this.allTypesLength)];
+        this.type = this.allTypes[Math.floor(Math.random() * this.allTypesLength)],
+        this.speed = 300;
     };
 
     function Comet() {
         this.x = screenWidth;
         this.y = screenHeight;
-        this.width = 20;
-        this.height = 20;
+        this.width = 20 * scaleX;
+        this.height = 20 * scaleY;
+        this.speed = 600;
     }
 
     function getScreenWidthAndHeight() {
@@ -206,26 +205,21 @@ function engine() {
             screenWidth = document.body.clientWidth;
             screenHeight = document.body.clientHeight;
         }
-        console.log(window.screen.width + ' ' + window.screen.height);
         screenWidth -= 24;
         screenHeight -= 24;
-        //screenWidth = 1600;
-        //screenHeight = 1200;
-        setScale(screenWidth, screenHeight);
-        scaleX = screenWidth / DEFAULT_WIDTH;
-        scaleY = screenHeight / DEFAULT_HEIGHT;
-        console.log(scaleX + ' ' + scaleY);
+        //screenWidth = 1024;
+        //screenHeight = 768;
+        setScale(screenWidth, screenHeight);           
     }
 
     function setScale(w, h) {
-        var defaultRatios = [[4, 3, [1024, 768]], [16, 9, [1366, 768]], [3, 2, [1152, 768]], [5, 3, [1280, 768]], [8, 5, [1280, 800]]],
+        var defaultRatios = [[4, 3, [1024, 768]], [16, 9, [1024, 576]], [3, 2, [1023, 682]], [5, 3, [1025, 615]], [8, 5, [1024, 640]]],
             closestRatio,
             closestDifference = Number.MAX_VALUE,
             tempWidth,
             tempHeight,
             tempDifference;
 
-        console.log('hai');
         for (var i = 0, length = defaultRatios.length; i < length; i++) {
             tempWidth = w / defaultRatios[i][0];
             tempHeight = h / defaultRatios[i][1];
@@ -240,23 +234,11 @@ function engine() {
             }
         }
 
-        DEFAULT_HEIGHT = defaultRatios[closestRatio][2][1];
-        DEFAULT_WIDTH = defaultRatios[closestRatio][2][0];
+        scaleX = w / defaultRatios[closestRatio][2][0];
+        scaleY = h / defaultRatios[closestRatio][2][1];        
     }
 
     function setGameDifficulty(difficulty) {
-        //var easy = document.getElementById("easy");
-
-
-        //var difficultyButtons = document.getElementsByTagName("input");
-        //var difficulty = 0;
-
-        //for (var i = 0; i < difficultyButtons.length; i++) {
-        //    if (difficultyButtons[i].type == "radio" && difficultyButtons[i].checked) {
-        //        var difficulty = i;
-        //    }
-        //}
-
         switch (difficulty) {
             case 0: {
                 enemyFrequency = 4;
@@ -276,65 +258,54 @@ function engine() {
         }
     }
 
-    function moveEnemies(speed) {
+    function moveEnemies() {
         for (var i = 0; i < enemies.length ; i++) {
-            enemies[i].y += speed;
+            
+            //console.log(enemies[i].x < player.x + player.width &&
+            //   enemies[i].x + enemies[i].width > player.x &&
+            //   enemies[i].y < player.y + player.height &&
+            //   enemies[i].y + enemies[i].height > player.y);
+
+            enemies[i].y += enemies[i].speed * delta;
             if (enemies[i].y >= screenHeight) {
                 enemies.splice(i, 1);
-                //console.log(enemies[i].y);
-                //console.log(player.y);
+            } else if (    //Enemy hit the player
+                enemies[i].x < player.x + player.width &&
+                enemies[i].x + enemies[i].width > player.x &&
+                enemies[i].y < player.y + player.height &&
+                enemies[i].y + enemies[i].height > player.y) {
+                isPlayerDead = true;                
             }
-
-            //Enemy hit the player
-            if (enemies[i].x >= (player.x - player.width) && enemies[i].x <= (player.x + player.width)
-                && enemies[i].y > (player.y - player.height)) {                
-                isPlayerDead = true;                                
-            }                
         }
     }
 
 
-    function moveComet(speed) {
+    function moveComet() {
         if (comet !== undefined) {
-            comet.y -= speed;
-            comet.x -= speed * 2;
+            comet.y -= comet.speed * delta;
+            comet.x -= (comet.speed * 2) * delta;
         }
     }
 
-    function movePlayer(event) {
-        if (event.keyCode in keyMap) {
-            keyMap[event.keyCode] = true;
-            if (keyMap[65] && keyMap[87]) {
-                //move up-left
-                player.x -= 8 * scaleX;
-                player.y -= 8 * scaleY;
-            } else if (keyMap[87] && keyMap[68]) {
-                //move up-right
-                player.y -= 8 * scaleY;
-                player.x += 8 * scaleX;
-            } else if (keyMap[65] && keyMap[83]) {
-                //move down-left
-                player.x -= 8 * scaleX;
-                player.y += 8 * scaleY;
-            } else if (keyMap[83] && keyMap[68]) {
-                //move down-right
-                player.x += 8 * scaleX;
-                player.y += 8 * scaleY;
-            } else if (keyMap[65]) {
-                //move left
-                player.x -= 8 * scaleX;
-            } else if (keyMap[87]) {
-                //move up
-                player.y -= 8 * scaleY;
-            } else if (keyMap[68]) {
-                //move right
-                player.x += 8 * scaleX;
-            } else if (keyMap[83]) {
-                //move down
-                player.y += 8 * scaleY;
-            }
+    function movePlayer() {
+        if (keyMap[65]) {
+            player.x -= player.speed * delta;
         }
-        drawScreen();
+        if (keyMap[87]) {
+            player.y -= player.speed * delta;
+        }
+        if (keyMap[68]) {
+            player.x += player.speed * delta;
+        }
+        if (keyMap[83]) {
+            player.y += player.speed * delta;
+        }
+    }
+
+    function keyDownHandler(e) {
+        if (e.keyCode in keyMap) {
+            keyMap[e.keyCode] = true;
+        }
     }
 
     function keyUpHandler(e) {
@@ -350,15 +321,15 @@ function engine() {
         this.targetY = targetPosition.y;
         this.currentX = this.playerX;
         this.currentY = this.playerY;
-        this.width = 8 * scaleX;
-        this.height = 8 * scaleY;
-        this.updatePosition = function (shotSpeed) {
+        this.size = 8 * scaleX;
+        this.speed = 800 * ((scaleX > scaleY) ? scaleX : scaleY);
+        this.updatePosition = function () {
             var deltaX = this.targetX - this.playerX;
             var deltaY = this.targetY - this.playerY;
 
             var vectorAngle = Math.atan(Math.abs(deltaY) / Math.abs(deltaX));
-            var xAbsSpeed = Math.abs(Math.cos(vectorAngle) * shotSpeed);
-            var yAbsSpeed = Math.abs(Math.sin(vectorAngle) * shotSpeed);
+            var xAbsSpeed = Math.abs(Math.cos(vectorAngle) * (this.speed * delta));
+            var yAbsSpeed = Math.abs(Math.sin(vectorAngle) * (this.speed * delta));
 
             if (deltaX >= 0 && deltaY >= 0) {
                 this.currentX += xAbsSpeed;
@@ -388,9 +359,9 @@ function engine() {
         //console.log("player X" + player.x + "player Y" + player.y);
     }
 
-    function moveShots(shotSpeed) {
+    function moveShots() {
         for (var i = 0; i < shots.length ; i++) {
-            shots[i].updatePosition(shotSpeed);
+            shots[i].updatePosition();
 
             if (shots[i].currentY >= screenHeight || shots[i].currentY < 0 ||
                 shots[i].currentX >= screenWidth || shots[i].currentX < 0) {
@@ -403,12 +374,12 @@ function engine() {
     }
 
     function isCollisionDetected(currentShot) {
-        for (var i = 0; i < enemies.length; i++) {
-            for (var j = 0, movementSquares = shotSpeed / currentShot.width; j < movementSquares; j++) {
+        for (var i = 0; i < enemies.length; i++) {            
+            for (var j = 0, movementSquares = (currentShot.speed * delta) / currentShot.size; j < movementSquares; j++) {
                 if ((currentShot.currentX < (enemies[i].x + enemies[i].width) &&
-                    (currentShot.currentX + currentShot.width) > enemies[i].x) &&
+                    (currentShot.currentX + currentShot.size) > enemies[i].x) &&
                     (currentShot.currentY < (enemies[i].y + enemies[i].height) &&
-                    (currentShot.currentY + currentShot.height) > enemies[i].y)) {
+                    (currentShot.currentY + currentShot.size) > enemies[i].y)) {
                     enemies.splice(i, 1);
                     return true;
                 }
