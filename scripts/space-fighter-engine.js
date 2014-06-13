@@ -29,6 +29,8 @@ function engine() {
         document.body.addEventListener("keydown", keyDownHandler);
         document.body.addEventListener("keyup", keyUpHandler);
         document.body.addEventListener('click', shootEnemy);
+        window.addEventListener('blur', onScreenBlur);
+
         getScreenWidthAndHeight();        
 
         frequencyCounter = 0;
@@ -295,7 +297,7 @@ function engine() {
         }
     }
 
-    function movePlayer() {
+    function movePlayer() {        
         if (keyMap[65]) {
             player.x -= player.speed * delta;
         }
@@ -321,6 +323,10 @@ function engine() {
             keyMap[e.keyCode] = false;
         }
     }
+
+    function onScreenBlur() {        
+        keyMap = { 87: false, 65: false, 68: false, 83: false }        
+    };
 
     function Shot(targetPosition) {
         this.playerX = player.x + (player.width / 2);
