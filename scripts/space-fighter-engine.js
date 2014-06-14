@@ -19,21 +19,23 @@ function engine() {
         ctx,
         scaleX,
         scaleY,
-        images = {},        
+        images = {},
         keyMap = { 87: false, 65: false, 68: false, 83: false },
         scorePoints,
-        isPlayerDead;
+        isPlayerDead,
+        isGameRunning;
+
+    var animFr;
 
     initialize();
-
     //setTimeout(run, 20);
 
 
-    function initialize() {        
+    function initialize() {
         document.body.addEventListener("keydown", keyDownHandler);
         document.body.addEventListener("keyup", keyUpHandler);
         document.body.addEventListener('click', shootEnemy);
-        getScreenWidthAndHeight();        
+        getScreenWidthAndHeight();
 
         scorePoints = 0;
         frequencyCounter = 0;
@@ -41,7 +43,7 @@ function engine() {
         cometFrequencyCounter = 0;
         cometFrequency = 10;
         loadImages();
-        
+
         player = {
             x: 300 * scaleX,
             y: 450 * scaleY,
@@ -52,29 +54,35 @@ function engine() {
         };
 
         enemies = [];
+        shots = [];        
 
         //Canvas Initialization
         canvas = document.getElementById("cnv");
         canvas.height = screenHeight;
-        canvas.width = screenWidth;        
+        canvas.width = screenWidth;
 
         ctx = canvas.getContext("2d");
         ctx.fillStyle = "red";
         isPlayerDead = false;
+        isGameRunning = true;
 
         lastTime = Date.now();
-        run();
+        animFr = requestAnimationFrame(run);
+        //run();
     }
 
-    function run() {        
-        if (isPlayerDead) {            
+    function run() {
+        if (isPlayerDead) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            window.cancelAnimationFrame(animFr);
+            
+            isGameRunning = false;
             startScreen();
             return;
         }
 
         var now = Date.now();
-        delta = (now - lastTime) / 1000;        
+        delta = (now - lastTime) / 1000;
 
         if (frequencyCounter >= enemyFrequency) {
             enemies.push(new Enemy());
@@ -149,7 +157,7 @@ function engine() {
         }
 
         function drawPlayer(x, y, width, height, modelScale) {
-            
+
             var offsetX = ((modelScale - 1) / 2) * width,
                 offsetY = ((modelScale - 1) / 2) * height;
             ctx.drawImage(images.player, x - offsetX, y - offsetY, width * modelScale, height * modelScale);
@@ -195,7 +203,7 @@ function engine() {
         this.allTypes = ["firstKind", "secondKind", "thirdKind"];
         this.allTypesLength = this.allTypes.length;
         this.type = this.allTypes[Math.floor(Math.random() * this.allTypesLength)],
-        this.speed =  Math.random()*600;
+        this.speed = Math.random() * 600;
     };
 
     function Comet() {
@@ -229,8 +237,8 @@ function engine() {
         //screenWidth = 800;
         //screenHeight = 600;
         screenWidth -= 24;
-        screenHeight -= 24;        
-        setScale(screenWidth, screenHeight);           
+        screenHeight -= 24;
+        setScale(screenWidth, screenHeight);
     }
 
     function setScale(w, h) {
@@ -256,7 +264,7 @@ function engine() {
         }
 
         scaleX = w / defaultRatios[closestRatio][2][0];
-        scaleY = h / defaultRatios[closestRatio][2][1];        
+        scaleY = h / defaultRatios[closestRatio][2][1];
     }
 
     function setGameDifficulty(difficulty) {
@@ -281,12 +289,12 @@ function engine() {
 
     function moveEnemies() {
         for (var i = 0; i < enemies.length ; i++) {
-            
+
             //console.log(enemies[i].x < player.x + player.width &&
             //   enemies[i].x + enemies[i].width > player.x &&
             //   enemies[i].y < player.y + player.height &&
             //   enemies[i].y + enemies[i].height > player.y);
-           
+
             enemies[i].y += enemies[i].speed * delta;
             if (enemies[i].y >= screenHeight) {
                 enemies.splice(i, 1);
@@ -298,6 +306,7 @@ function engine() {
                 isPlayerDead = true;
             }
         }
+
     }
 
     function moveComet() {
@@ -385,15 +394,15 @@ function engine() {
     }
 
     function shootEnemy(e) {
-        var targetPosition = {
-            x: e.clientX,
-            y: e.clientY
-        }
-        $.playSound('sounds/laser-shoot');
-        shots.push(new Shot(targetPosition));
-
-        //console.log("mouse  X" + e.clientX + "mouse Y" + e.clientY);
-        //console.log("player X" + player.x + "player Y" + player.y);
+        if (isGameRunning) {
+            var targetPosition = {
+                x: e.clientX,
+                y: e.clientY
+            }
+            console.log(shots.length);
+            $.playSound('sounds/laser-shoot');
+            shots.push(new Shot(targetPosition));
+        }       
     }
 
     function moveShots() {
@@ -411,7 +420,7 @@ function engine() {
     }
 
     function isCollisionDetected(currentShot) {
-        for (var i = 0; i < enemies.length; i++) {            
+        for (var i = 0; i < enemies.length; i++) {
             for (var j = 0, movementSquares = (currentShot.speed * delta) / currentShot.size; j < movementSquares; j++) {
                 if ((currentShot.currentX < (enemies[i].x + enemies[i].width) &&
                     (currentShot.currentX + currentShot.size) > enemies[i].x) &&
@@ -425,11 +434,6 @@ function engine() {
                     return true;
                 }
             }
-            //if (Math.abs(currentShot.currentX - enemies[i].x) < collisionRange &&
-            //    Math.abs(currentShot.currentY - enemies[i].y) < collisionRange) {
-            //    enemies.splice(i, 1);
-            //    return true;
-            //}
         }
         return false;
     }
