@@ -10,6 +10,9 @@ function startScreen () {
     var $playButton = $('<button type="button" id="btn-play">PLAY</button>)');
     $wrapper.append($playButton);
 
+    var $logo = $('<img src="images/logo.png" alt="Logo" id="img-logo" />')
+    $wrapper.append($logo);
+
     var $label = $('<label for="playerName">Enter name: </label>');
     var $inputName = $('<input type="text" id="player-name" name="playerName" />');
     var $startGameButton = $('<button type="button" id="btn-start">START GAME</button>)');
@@ -19,19 +22,6 @@ function startScreen () {
     //var $playButton = $('#btn-play');        
     //var $inputName = $('#player-name');
     //var $startGameButton = $('#btn-start');
-
-    
-    $(document).keypress(function (e) {
-        if (e.keyCode == 13) {
-            $playButton.click();
-        }
-    });
-
-    $('#player-name').keypress(function (e) {
-        if (e.keyCode == 13) {
-            $startGameButton.click();
-        }
-    });
 
     $playButton.click(function(){
         $playButton.remove();
@@ -51,8 +41,20 @@ function startScreen () {
         });
     });
 
+    $(document).keypress(function (e) {
+        if (e.keyCode == 13) {
+            $playButton.click();
+        }
+    });
+
+    $('#player-name').keypress(function (e) {
+        if (e.keyCode == 13) {
+            $startGameButton.click();
+        }
+    });
+
     $startGameButton.click(function () {
         $wrapper.remove();
         engine();        
-    });  
+    });
 };
