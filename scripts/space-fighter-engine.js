@@ -37,7 +37,7 @@ function engine() {
         frequencyCounter = 0;
         enemyFrequency = 0.3;
         cometFrequencyCounter = 0;
-        cometFrequency = 1;
+        cometFrequency = 10;
         loadImages();
         
         player = {
@@ -225,9 +225,7 @@ function engine() {
             screenHeight = document.body.clientHeight;
         }
         screenWidth -= 24;
-        screenHeight -= 24;
-        //screenWidth = 1024;
-        //screenHeight = 768;
+        screenHeight -= 24;        
         setScale(screenWidth, screenHeight);           
     }
 
@@ -416,6 +414,7 @@ function engine() {
                     (currentShot.currentY < (enemies[i].y + enemies[i].height) &&
                     (currentShot.currentY + currentShot.size) > enemies[i].y)) {
                     enemies.splice(i, 1);
+                    $.playSound('sounds/grenade');
                     return true;
                 }
             }
@@ -443,6 +442,7 @@ function engine() {
 
         if ((isCometYinObject === true && isCometXInObject === true) ||
             (isObjectXInComet === true && isObjectYInComet === true)) {
+            $.playSound('sounds/comet-explosion')
             return true;
         }
 
