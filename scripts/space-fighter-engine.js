@@ -35,6 +35,8 @@ function engine() {
         document.body.addEventListener("keydown", keyDownHandler);
         document.body.addEventListener("keyup", keyUpHandler);
         document.body.addEventListener('click', shootEnemy);
+        window.addEventListener('blur', onScreenBlur);
+
         getScreenWidthAndHeight();
 
         scorePoints = 0;
@@ -291,12 +293,13 @@ function engine() {
         for (var i = 0; i < enemies.length ; i++) {
 
             //Ranom side move
-            var rangeX = 8 * Math.random();
-            var directions = [-1, 1];
-            rangeX = directions[Math.round(Math.random())] * rangeX;
+            //var rangeX = 8 * Math.random();
+            //var directions = [-1, 1];
+            //rangeX = directions[Math.round(Math.random())] * rangeX;
+            //enemies[i].x += rangeX;
 
             enemies[i].y += enemies[i].speed * delta;
-            enemies[i].x += rangeX;
+            
 
             if (enemies[i].y >= screenHeight) {
                 enemies.splice(i, 1);
