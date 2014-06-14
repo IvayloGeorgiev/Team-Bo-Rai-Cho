@@ -1,4 +1,5 @@
 /// <reference path="space-fighter-engine.js" />
+/// <reference path="jquery-2.1.1.min.js" />
 
 startScreen();
 
@@ -13,13 +14,6 @@ function startScreen () {
     var $label = $('<label for="playerName">Enter name: </label>');
     var $inputName = $('<input type="text" id="player-name" name="playerName" />');
     var $startGameButton = $('<button type="button" id="btn-start">START GAME</button>)');
-
-    //Yanko fix
-    //var $wrapper = $('#wrapper');
-    //var $playButton = $('#btn-play');        
-    //var $inputName = $('#player-name');
-    //var $startGameButton = $('#btn-start');
-
     
     $(document).keypress(function (e) {
         if (e.keyCode == 13) {
@@ -28,7 +22,7 @@ function startScreen () {
     });
 
     $('#player-name').keypress(function (e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode == 13) {            
             $startGameButton.click();
         }
     });
@@ -43,6 +37,7 @@ function startScreen () {
 
         $('#player-name').change(function() {
             if ($(this).val().length >= 2) {
+                $('#display-player-name').text($('#player-name').val());
                 $startGameButton.show();
             }
             else {

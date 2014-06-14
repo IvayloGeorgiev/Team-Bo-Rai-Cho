@@ -3,7 +3,6 @@
 /// <reference path="jquery-2.1.1.min.js" />
 /// <reference path="soundPlugin.js" />
 
-
 function engine() {
     var enemies = [],
         shots = [],
@@ -24,13 +23,10 @@ function engine() {
         scorePoints,
         isPlayerDead,
         isGameRunning,
-        enemyXMovementFrequency;
-
-    var animFr;
+        enemyXMovementFrequency,
+        gameAnimationFrame;
 
     initialize();
-    //setTimeout(run, 20);
-
 
     function initialize() {
         document.body.addEventListener("keydown", keyDownHandler);
@@ -70,17 +66,61 @@ function engine() {
         isPlayerDead = false;
         isGameRunning = true;
 
+        getHighscores();
+
         lastTime = Date.now();
-        animFr = requestAnimationFrame(run);
-        //run();
+        gameAnimationFrame = requestAnimationFrame(run);
+    }
+
+    function getHighscores() {
+        var highScoresJSON = localStorage.getItem('spaceFighterScores');
+        if (highScoresJSON == null) {
+            return;
+        }
+
+        var playersHighscores = JSON.parse(highScoresJSON);
+
+        playersHighscores.sort(function (a, b) {
+            return b.score - a.score;
+        });
+
+        $('#highcores').text("Top 3 players:");
+
+        for (var i = 0; i < playersHighscores.length; i++) {
+            var playerHighscoreStr = playersHighscores[i].name + ' ' + playersHighscores[i].score;
+
+            $('#highcores').append($('<br>'));
+            $('#highcores').append(playerHighscoreStr);
+
+            if (i == 2) {
+                break;
+            }
+        }
+    }
+
+    function setHighscores() {
+        var playerInfo = {
+            name: $('#display-player-name').text(),
+            score: scorePoints
+        }
+
+        var highscores = [];
+        var highScoresJSON = localStorage.getItem('spaceFighterScores');
+        if (highScoresJSON) {
+            highscores = JSON.parse(highScoresJSON);
+        }
+        highscores.push(playerInfo);
+        highscoresJSON = JSON.stringify(highscores);
+        localStorage.setItem('spaceFighterScores', highscoresJSON);
     }
 
     function run() {
         if (isPlayerDead) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            window.cancelAnimationFrame(animFr);
-
+            window.cancelAnimationFrame(gameAnimationFrame);
             isGameRunning = false;
+            setHighscores();
+            getHighscores();
             startScreen();
             return;
         }
@@ -273,26 +313,6 @@ function engine() {
         scaleY = h / defaultRatios[closestRatio][2][1];
     }
 
-    //function setGameDifficulty(difficulty) {
-    //    switch (difficulty) {
-    //        case 0: {
-    //            enemyFrequency = 4;
-    //            break;
-    //        }
-    //        case 1: {
-    //            enemyFrequency = 2;
-    //            break;
-    //        }
-    //        case 2: {
-    //            enemyFrequency = 0;
-    //            break;
-    //        }
-    //        default: {
-    //            enemyFrequency = 4;
-    //        }
-    //    }
-    //}
-
     function moveEnemies() {
         for (var i = 0; i < enemies.length ; i++) {
 
@@ -301,7 +321,7 @@ function engine() {
             //var directions = [-1, 1];
             //rangeX = directions[Math.round(Math.random())] * rangeX;
             //enemies[i].x += rangeX;
-            
+
             enemies[i].xChangeTimer += delta;
             if (enemies[i].xChangeTimer >= enemyXMovementFrequency) {
                 enemies[i].xChangeTimer = 0;
@@ -373,8 +393,8 @@ function engine() {
         }
     }
 
-    function onScreenBlur() {        
-        keyMap = { 87: false, 65: false, 68: false, 83: false }        
+    function onScreenBlur() {
+        keyMap = { 87: false, 65: false, 68: false, 83: false }
     };
 
     function Shot(targetPosition) {
@@ -415,7 +435,7 @@ function engine() {
             var targetPosition = {
                 x: e.clientX,
                 y: e.clientY
-            }            
+            }
             $.playSound('sounds/laser-shoot');
             shots.push(new Shot(targetPosition));
         }
@@ -446,7 +466,7 @@ function engine() {
 
                     $.playSound('sounds/grenade');
                     scorePoints += 10;
-                    $('#score-field').text(scorePoints);
+                    $('#score-field').text("Score: " + scorePoints);
                     return true;
                 }
             }
