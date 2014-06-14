@@ -23,7 +23,8 @@ function engine() {
         keyMap = { 87: false, 65: false, 68: false, 83: false },
         scorePoints,
         isPlayerDead,
-        isGameRunning;
+        isGameRunning,
+        enemyXMovementFrequency;
 
     var animFr;
 
@@ -44,6 +45,7 @@ function engine() {
         enemyFrequency = 0.3;
         cometFrequencyCounter = 0;
         cometFrequency = 10;
+        enemyXMovementFrequency = 0.5;
         loadImages();
 
         player = {
@@ -205,7 +207,9 @@ function engine() {
         this.allTypes = ["firstKind", "secondKind", "thirdKind"];
         this.allTypesLength = this.allTypes.length;
         this.type = this.allTypes[Math.floor(Math.random() * this.allTypesLength)],
-        this.speed = Math.random() * 600;
+        this.speed = 50 + Math.random() * 400,
+        this.xChangeTimer = 0,
+        this.speedX = 100 + Math.random() * 300;
     };
 
     function Comet() {
@@ -297,9 +301,14 @@ function engine() {
             //var directions = [-1, 1];
             //rangeX = directions[Math.round(Math.random())] * rangeX;
             //enemies[i].x += rangeX;
-
-            enemies[i].y += enemies[i].speed * delta;
             
+            enemies[i].xChangeTimer += delta;
+            if (enemies[i].xChangeTimer >= enemyXMovementFrequency) {
+                enemies[i].xChangeTimer = 0;
+                enemies[i].speedX *= -1;
+            }
+            enemies[i].y += enemies[i].speed * delta;
+            enemies[i].x += enemies[i].speedX * delta;
 
             if (enemies[i].y >= screenHeight) {
                 enemies.splice(i, 1);
@@ -406,8 +415,7 @@ function engine() {
             var targetPosition = {
                 x: e.clientX,
                 y: e.clientY
-            }
-            console.log(shots.length);
+            }            
             $.playSound('sounds/laser-shoot');
             shots.push(new Shot(targetPosition));
         }
