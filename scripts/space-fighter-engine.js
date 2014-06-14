@@ -1,5 +1,8 @@
 ﻿/// <reference path="kinetic-v5.1.0.min.js" />
 /// <reference path="start-screen.js" />
+/// <reference path="jquery-2.1.1.min.js" />
+/// <reference path="soundPlugin.js" />
+
 
 function engine() {
     var enemies = [],
@@ -18,10 +21,13 @@ function engine() {
         scaleY,
         images = {},        
         keyMap = { 87: false, 65: false, 68: false, 83: false },
-        isPlayerDead;
+        scorePoints,
+        isPlayerDead,
+        isGameRunning;
+
+    var animFr;
 
     initialize();
-
     //setTimeout(run, 20);
 
 
@@ -33,10 +39,11 @@ function engine() {
 
         getScreenWidthAndHeight();        
 
+        scorePoints = 0;
         frequencyCounter = 0;
-        enemyFrequency = 1;
+        enemyFrequency = 0.3;
         cometFrequencyCounter = 0;
-        cometFrequency = 1;
+        cometFrequency = 10;
         loadImages();
         
         player = {
@@ -49,6 +56,7 @@ function engine() {
         };
 
         enemies = [];
+        shots = [];
 
         //Canvas Initialization
         canvas = document.getElementById("cnv");
@@ -58,14 +66,19 @@ function engine() {
         ctx = canvas.getContext("2d");
         ctx.fillStyle = "red";
         isPlayerDead = false;
+        isGameRunning = true;
 
         lastTime = Date.now();
-        run();
+        animFr = requestAnimationFrame(run);
+        //run();
     }
 
     function run() {        
         if (isPlayerDead) {            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            window.cancelAnimationFrame(animFr);
+
+            isGameRunning = false;
             startScreen();
             return;
         }
@@ -83,6 +96,7 @@ function engine() {
 
             if (comet === undefined || comet.x < 1 || comet.y < 1) {
                 comet = new Comet();
+                $.playSound('sounds/Comet');
             }
         }
 
@@ -191,7 +205,7 @@ function engine() {
         this.allTypes = ["firstKind", "secondKind", "thirdKind"];
         this.allTypesLength = this.allTypes.length;
         this.type = this.allTypes[Math.floor(Math.random() * this.allTypesLength)],
-        this.speed = 300;
+        this.speed = Math.random() * 600;
     };
 
     function Comet() {
@@ -222,10 +236,10 @@ function engine() {
             screenWidth = document.body.clientWidth;
             screenHeight = document.body.clientHeight;
         }
+        //screenWidth = 800;
+        //screenHeight = 600;
         screenWidth -= 24;
         screenHeight -= 24;
-        //screenWidth = 1024;
-        //screenHeight = 768;
         setScale(screenWidth, screenHeight);           
     }
 
@@ -255,35 +269,37 @@ function engine() {
         scaleY = h / defaultRatios[closestRatio][2][1];        
     }
 
-    function setGameDifficulty(difficulty) {
-        switch (difficulty) {
-            case 0: {
-                enemyFrequency = 4;
-                break;
-            }
-            case 1: {
-                enemyFrequency = 2;
-                break;
-            }
-            case 2: {
-                enemyFrequency = 0;
-                break;
-            }
-            default: {
-                enemyFrequency = 4;
-            }
-        }
-    }
+    //function setGameDifficulty(difficulty) {
+    //    switch (difficulty) {
+    //        case 0: {
+    //            enemyFrequency = 4;
+    //            break;
+    //        }
+    //        case 1: {
+    //            enemyFrequency = 2;
+    //            break;
+    //        }
+    //        case 2: {
+    //            enemyFrequency = 0;
+    //            break;
+    //        }
+    //        default: {
+    //            enemyFrequency = 4;
+    //        }
+    //    }
+    //}
 
     function moveEnemies() {
         for (var i = 0; i < enemies.length ; i++) {
             
-            //console.log(enemies[i].x < player.x + player.width &&
-            //   enemies[i].x + enemies[i].width > player.x &&
-            //   enemies[i].y < player.y + player.height &&
-            //   enemies[i].y + enemies[i].height > player.y);
+            //Ranom side move
+            var rangeX = 8 * Math.random();
+            var directions = [-1, 1];
+            rangeX = directions[Math.round(Math.random())] * rangeX;
 
             enemies[i].y += enemies[i].speed * delta;
+            enemies[i].x += rangeX;
+
             if (enemies[i].y >= screenHeight) {
                 enemies.splice(i, 1);
             } else if (    //Enemy hit the player
@@ -294,8 +310,8 @@ function engine() {
                 isPlayerDead = true;
             }
         }
-    }
 
+    }
 
     function moveComet() {
         if (comet === undefined) {
@@ -321,7 +337,7 @@ function engine() {
         }
     }
 
-    function movePlayer() {        
+    function movePlayer() {
         if (keyMap[65]) {
             player.x -= player.speed * delta;
         }
@@ -386,15 +402,15 @@ function engine() {
     }
 
     function shootEnemy(e) {
+        if (isGameRunning) {
         var targetPosition = {
             x: e.clientX,
             y: e.clientY
         }
-
+            console.log(shots.length);
+            $.playSound('sounds/laser-shoot');
         shots.push(new Shot(targetPosition));
-
-        //console.log("mouse  X" + e.clientX + "mouse Y" + e.clientY);
-        //console.log("player X" + player.x + "player Y" + player.y);
+        }
     }
 
     function moveShots() {
@@ -419,14 +435,13 @@ function engine() {
                     (currentShot.currentY < (enemies[i].y + enemies[i].height) &&
                     (currentShot.currentY + currentShot.size) > enemies[i].y)) {
                     enemies.splice(i, 1);
+
+                    $.playSound('sounds/grenade');
+                    scorePoints += 10;
+                    $('#score-field').text(scorePoints);
                     return true;
                 }
             }
-            //if (Math.abs(currentShot.currentX - enemies[i].x) < collisionRange &&
-            //    Math.abs(currentShot.currentY - enemies[i].y) < collisionRange) {
-            //    enemies.splice(i, 1);
-            //    return true;
-            //}
         }
         return false;
     }
@@ -446,6 +461,7 @@ function engine() {
 
         if ((isCometYinObject === true && isCometXInObject === true) ||
             (isObjectXInComet === true && isObjectYInComet === true)) {
+            $.playSound('sounds/comet-explosion')
             return true;
         }
 

@@ -15,3 +15,16 @@
     cursor: url(../images/crosshaircyan.png), auto;
 
 }
+
+#score-container {    
+    position:absolute;
+    display:inline-block;
+    right:1%;
+    top: 1%;
+    width:200px;       
+    background-color: transparent;
+    font-family:'Comic Sans MS';
+    text-align:center;
+    color:white;
+}
+

@@ -2,7 +2,7 @@
 /*global window: false*/
 /*global Raphael: false*/
 /*global Image: false*/
-/*
+
 (function () {
     "use strict";
 
@@ -44,7 +44,7 @@
     frame1.src = frame1Url;
     frame2.src = frame2Url;
 
-    // Apparently Chrome does not work with frame1.height... This is a fix for Chrome
+     //Apparently Chrome does not work with frame1.height... This is a fix for Chrome
     frameHeight = 1920;
 
     frame1Image = paper.image(frame1Url, x, y - frameHeight * 2, width, frameHeight);
@@ -60,4 +60,4 @@
     frame1Image.animate(frame1Anim.repeat(Infinity), '<>');
     frame2Image.animate(frame2Anim.repeat(Infinity), '<>');
     frame3Image.animate(frame3Anim.repeat(Infinity), '<>');
-}());*/
+}());
