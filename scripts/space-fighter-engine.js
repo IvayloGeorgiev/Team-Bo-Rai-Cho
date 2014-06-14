@@ -54,7 +54,7 @@ function engine() {
         };
 
         enemies = [];
-        shots = [];        
+        shots = [];
 
         //Canvas Initialization
         canvas = document.getElementById("cnv");
@@ -75,7 +75,7 @@ function engine() {
         if (isPlayerDead) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             window.cancelAnimationFrame(animFr);
-            
+
             isGameRunning = false;
             startScreen();
             return;
@@ -267,35 +267,37 @@ function engine() {
         scaleY = h / defaultRatios[closestRatio][2][1];
     }
 
-    function setGameDifficulty(difficulty) {
-        switch (difficulty) {
-            case 0: {
-                enemyFrequency = 4;
-                break;
-            }
-            case 1: {
-                enemyFrequency = 2;
-                break;
-            }
-            case 2: {
-                enemyFrequency = 0;
-                break;
-            }
-            default: {
-                enemyFrequency = 4;
-            }
-        }
-    }
+    //function setGameDifficulty(difficulty) {
+    //    switch (difficulty) {
+    //        case 0: {
+    //            enemyFrequency = 4;
+    //            break;
+    //        }
+    //        case 1: {
+    //            enemyFrequency = 2;
+    //            break;
+    //        }
+    //        case 2: {
+    //            enemyFrequency = 0;
+    //            break;
+    //        }
+    //        default: {
+    //            enemyFrequency = 4;
+    //        }
+    //    }
+    //}
 
     function moveEnemies() {
         for (var i = 0; i < enemies.length ; i++) {
 
-            //console.log(enemies[i].x < player.x + player.width &&
-            //   enemies[i].x + enemies[i].width > player.x &&
-            //   enemies[i].y < player.y + player.height &&
-            //   enemies[i].y + enemies[i].height > player.y);
+            //Ranom side move
+            var rangeX = 8 * Math.random();
+            var directions = [-1, 1];
+            rangeX = directions[Math.round(Math.random())] * rangeX;
 
             enemies[i].y += enemies[i].speed * delta;
+            enemies[i].x += rangeX;
+
             if (enemies[i].y >= screenHeight) {
                 enemies.splice(i, 1);
             } else if (    //Enemy hit the player
@@ -402,7 +404,7 @@ function engine() {
             console.log(shots.length);
             $.playSound('sounds/laser-shoot');
             shots.push(new Shot(targetPosition));
-        }       
+        }
     }
 
     function moveShots() {
