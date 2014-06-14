@@ -1,5 +1,8 @@
 ﻿/// <reference path="kinetic-v5.1.0.min.js" />
 /// <reference path="start-screen.js" />
+/// <reference path="jquery-2.1.1.min.js" />
+/// <reference path="soundPlugin.js" />
+
 
 function engine() {
     var enemies = [],
@@ -81,6 +84,7 @@ function engine() {
 
             if (comet === undefined || comet.x < 1 || comet.y < 1) {
                 comet = new Comet();
+                $.playSound('sounds/Comet');
             }
         }
 
@@ -383,7 +387,7 @@ function engine() {
             x: e.clientX,
             y: e.clientY
         }
-
+        $.playSound('sounds/laser-shoot');
         shots.push(new Shot(targetPosition));
 
         //console.log("mouse  X" + e.clientX + "mouse Y" + e.clientY);
