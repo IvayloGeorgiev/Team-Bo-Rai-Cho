@@ -32,7 +32,7 @@ function engine() {
         getScreenWidthAndHeight();        
 
         frequencyCounter = 0;
-        enemyFrequency = 1;
+        enemyFrequency = 0.3;
         cometFrequencyCounter = 0;
         cometFrequency = 1;
         loadImages();
@@ -189,7 +189,7 @@ function engine() {
         this.allTypes = ["firstKind", "secondKind", "thirdKind"];
         this.allTypesLength = this.allTypes.length;
         this.type = this.allTypes[Math.floor(Math.random() * this.allTypesLength)],
-        this.speed = 300;
+        this.speed =  Math.random()*600;
     };
 
     function Comet() {
@@ -280,7 +280,7 @@ function engine() {
             //   enemies[i].x + enemies[i].width > player.x &&
             //   enemies[i].y < player.y + player.height &&
             //   enemies[i].y + enemies[i].height > player.y);
-
+           
             enemies[i].y += enemies[i].speed * delta;
             if (enemies[i].y >= screenHeight) {
                 enemies.splice(i, 1);
@@ -293,7 +293,6 @@ function engine() {
             }
         }
     }
-
 
     function moveComet() {
         if (comet === undefined) {
