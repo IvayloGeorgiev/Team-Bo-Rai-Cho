@@ -3,14 +3,20 @@
 <head>
     <title>Space Fighter!</title>    
     <link type="text/css" rel="stylesheet" href="styles/main-style.css" />
-    <link type="text/css" rel="stylesheet" href="styles/start-screen-style.css" />
+    <link type="text/css" rel="stylesheet" href="styles/start-screen-style.css" />    
 </head>
-<body>
+<body>    
     <div id="svg">
     </div>
     <div id="canvas-container">
         <canvas id="cnv"></canvas>
+    </div>   
+
+    <div id="score-container">
+        <h2>Score:</h2>
+        <h3 id="score-field"></h3>
     </div>
+
     <script src="scripts/kinetic-v5.1.0.min.js"></script>
     <script src="scripts/jquery-2.1.1.min.js"></script>
     <script src="scripts/raphael-min.js"></script>
@@ -19,6 +25,7 @@
     <script src="scripts/background.js"></script>    
     <script src="scripts/space-fighter-engine.js"></script>
     <script src="scripts/start-screen.js"></script>
+    
     
 </body>
 </html>

@@ -21,6 +21,7 @@ function engine() {
         scaleY,
         images = {},        
         keyMap = { 87: false, 65: false, 68: false, 83: false },
+        scorePoints,
         isPlayerDead;
 
     initialize();
@@ -34,6 +35,7 @@ function engine() {
         document.body.addEventListener('click', shootEnemy);
         getScreenWidthAndHeight();        
 
+        scorePoints = 0;
         frequencyCounter = 0;
         enemyFrequency = 0.3;
         cometFrequencyCounter = 0;
@@ -224,6 +226,8 @@ function engine() {
             screenWidth = document.body.clientWidth;
             screenHeight = document.body.clientHeight;
         }
+        //screenWidth = 800;
+        //screenHeight = 600;
         screenWidth -= 24;
         screenHeight -= 24;        
         setScale(screenWidth, screenHeight);           
@@ -414,7 +418,10 @@ function engine() {
                     (currentShot.currentY < (enemies[i].y + enemies[i].height) &&
                     (currentShot.currentY + currentShot.size) > enemies[i].y)) {
                     enemies.splice(i, 1);
+
                     $.playSound('sounds/grenade');
+                    scorePoints += 10;
+                    $('#score-field').text(scorePoints);
                     return true;
                 }
             }
