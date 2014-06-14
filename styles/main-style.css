@@ -28,3 +28,16 @@
     color:white;
 }
 
+#logo-container {
+    position: absolute;
+    display: inline-block;
+    width: 200px;
+    height: 100px;
+    left: 1%;
+    top: 1%;
+    background-image: url("../images/logo.png");
+    background-repeat: no-repeat;
+    background-size: 100%;
+    opacity: 0.5;
+}
+
