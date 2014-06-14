@@ -19,7 +19,7 @@ function engine() {
         ctx,
         scaleX,
         scaleY,
-        images = {},        
+        images = {},
         keyMap = { 87: false, 65: false, 68: false, 83: false },
         scorePoints,
         isPlayerDead,
@@ -31,13 +31,13 @@ function engine() {
     //setTimeout(run, 20);
 
 
-    function initialize() {        
+    function initialize() {
         document.body.addEventListener("keydown", keyDownHandler);
         document.body.addEventListener("keyup", keyUpHandler);
         document.body.addEventListener('click', shootEnemy);
         window.addEventListener('blur', onScreenBlur);
 
-        getScreenWidthAndHeight();        
+        getScreenWidthAndHeight();
 
         scorePoints = 0;
         frequencyCounter = 0;
@@ -45,7 +45,7 @@ function engine() {
         cometFrequencyCounter = 0;
         cometFrequency = 10;
         loadImages();
-        
+
         player = {
             x: 300 * scaleX,
             y: 450 * scaleY,
@@ -61,7 +61,7 @@ function engine() {
         //Canvas Initialization
         canvas = document.getElementById("cnv");
         canvas.height = screenHeight;
-        canvas.width = screenWidth;        
+        canvas.width = screenWidth;
 
         ctx = canvas.getContext("2d");
         ctx.fillStyle = "red";
@@ -73,8 +73,8 @@ function engine() {
         //run();
     }
 
-    function run() {        
-        if (isPlayerDead) {            
+    function run() {
+        if (isPlayerDead) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             window.cancelAnimationFrame(animFr);
 
@@ -84,7 +84,7 @@ function engine() {
         }
 
         var now = Date.now();
-        delta = (now - lastTime) / 1000;        
+        delta = (now - lastTime) / 1000;
 
         if (frequencyCounter >= enemyFrequency) {
             enemies.push(new Enemy());
@@ -159,7 +159,7 @@ function engine() {
         }
 
         function drawPlayer(x, y, width, height, modelScale) {
-            
+
             var offsetX = ((modelScale - 1) / 2) * width,
                 offsetY = ((modelScale - 1) / 2) * height;
             ctx.drawImage(images.player, x - offsetX, y - offsetY, width * modelScale, height * modelScale);
@@ -240,7 +240,7 @@ function engine() {
         //screenHeight = 600;
         screenWidth -= 24;
         screenHeight -= 24;
-        setScale(screenWidth, screenHeight);           
+        setScale(screenWidth, screenHeight);
     }
 
     function setScale(w, h) {
@@ -266,7 +266,7 @@ function engine() {
         }
 
         scaleX = w / defaultRatios[closestRatio][2][0];
-        scaleY = h / defaultRatios[closestRatio][2][1];        
+        scaleY = h / defaultRatios[closestRatio][2][1];
     }
 
     //function setGameDifficulty(difficulty) {
@@ -291,14 +291,15 @@ function engine() {
 
     function moveEnemies() {
         for (var i = 0; i < enemies.length ; i++) {
-            
+
             //Ranom side move
-            var rangeX = 8 * Math.random();
-            var directions = [-1, 1];
-            rangeX = directions[Math.round(Math.random())] * rangeX;
+            //var rangeX = 8 * Math.random();
+            //var directions = [-1, 1];
+            //rangeX = directions[Math.round(Math.random())] * rangeX;
+            //enemies[i].x += rangeX;
 
             enemies[i].y += enemies[i].speed * delta;
-            enemies[i].x += rangeX;
+            
 
             if (enemies[i].y >= screenHeight) {
                 enemies.splice(i, 1);
@@ -402,13 +403,13 @@ function engine() {
 
     function shootEnemy(e) {
         if (isGameRunning) {
-        var targetPosition = {
-            x: e.clientX,
-            y: e.clientY
-        }
+            var targetPosition = {
+                x: e.clientX,
+                y: e.clientY
+            }
             console.log(shots.length);
             $.playSound('sounds/laser-shoot');
-        shots.push(new Shot(targetPosition));
+            shots.push(new Shot(targetPosition));
         }
     }
 
@@ -427,7 +428,7 @@ function engine() {
     }
 
     function isCollisionDetected(currentShot) {
-        for (var i = 0; i < enemies.length; i++) {            
+        for (var i = 0; i < enemies.length; i++) {
             for (var j = 0, movementSquares = (currentShot.speed * delta) / currentShot.size; j < movementSquares; j++) {
                 if ((currentShot.currentX < (enemies[i].x + enemies[i].width) &&
                     (currentShot.currentX + currentShot.size) > enemies[i].x) &&
