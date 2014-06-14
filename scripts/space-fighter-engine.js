@@ -310,7 +310,6 @@ function engine() {
                 isPlayerDead = true;
             }
         }
-
     }
 
     function moveComet() {
