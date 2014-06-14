@@ -24,7 +24,11 @@ function engine() {
         isPlayerDead,
         isGameRunning,
         enemyXMovementFrequency,
-        gameAnimationFrame;
+        gameAnimationFrame,
+        shotSound,
+        collisionSound,
+        cometSound,
+        cometCollisionSound;
 
     initialize();
 
@@ -65,6 +69,12 @@ function engine() {
         ctx.fillStyle = "red";
         isPlayerDead = false;
         isGameRunning = true;
+
+        //load sounds
+        shotSound = new Audio('sounds/laser-shoot.mp3');
+        collisionSound = new Audio('sounds/grenade.mp3');
+        cometSound = new Audio('sounds/Comet.mp3');
+        cometCollisionSound = new Audio('sounds/comet-explosion.mp3');
 
         getHighscores();
 
@@ -138,7 +148,7 @@ function engine() {
 
             if (comet === undefined || comet.x < 1 || comet.y < 1) {
                 comet = new Comet();
-                $.playSound('sounds/Comet');
+                cometSound.play();
             }
         }
 
@@ -436,7 +446,10 @@ function engine() {
                 x: e.clientX,
                 y: e.clientY
             }
-            $.playSound('sounds/laser-shoot');
+            
+            shotSound.pause();
+            shotSound.currentTime = 0;
+            shotSound.play();
             shots.push(new Shot(targetPosition));
         }
     }
@@ -464,7 +477,11 @@ function engine() {
                     (currentShot.currentY + currentShot.size) > enemies[i].y)) {
                     enemies.splice(i, 1);
 
-                    $.playSound('sounds/grenade');
+                    
+                    collisionSound.pause();
+                    collisionSound.currentTime = 0;
+                    collisionSound.play();
+
                     scorePoints += 10;
                     $('#score-field').text("Score: " + scorePoints);
                     return true;
@@ -489,7 +506,7 @@ function engine() {
 
         if ((isCometYinObject === true && isCometXInObject === true) ||
             (isObjectXInComet === true && isObjectYInComet === true)) {
-            $.playSound('sounds/comet-explosion')
+            cometCollisionSound.play();
             return true;
         }
 

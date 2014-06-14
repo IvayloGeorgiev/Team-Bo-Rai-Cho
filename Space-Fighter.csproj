@@ -75,6 +75,7 @@
     <Content Include="sounds\blast.mp3" />
     <Content Include="sounds\comet-explosion.mp3" />
     <Content Include="sounds\Comet.mp3" />
+    <Content Include="sounds\grenade.mp3" />
     <Content Include="sounds\gun-shoot.mp3" />
     <Content Include="sounds\laser-shoot.mp3" />
     <Content Include="Space-Fighter.html" />
