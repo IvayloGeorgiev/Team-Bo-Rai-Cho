@@ -365,6 +365,10 @@ function engine() {
         }
     }
 
+    function onScreenBlur() {        
+        keyMap = { 87: false, 65: false, 68: false, 83: false }        
+    };
+
     function Shot(targetPosition) {
         this.playerX = player.x + (player.width / 2);
         this.playerY = player.y + (player.height / 2);
