@@ -13,7 +13,6 @@
 #cnv {
     position: relative;    
     cursor: url(../images/crosshaircyan.png), auto;
-
 }
 
 #score-container {    
@@ -25,12 +24,13 @@
     background-color: transparent;
     font-family:'Comic Sans MS';
     text-align:center;
-    color:white;
+    color: #2c65f7;
+    opacity: 0.6;
 }
 
 #logo-container {
     position: absolute;
-    display: inline-block;
+    display: none;
     width: 200px;
     height: 100px;
     left: 1%;

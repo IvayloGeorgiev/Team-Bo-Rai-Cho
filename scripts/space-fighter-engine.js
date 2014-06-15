@@ -80,6 +80,7 @@ function engine() {
 
         lastTime = Date.now();
         gameAnimationFrame = requestAnimationFrame(run);
+        $('#logo-container').show();
     }
 
     function getHighscores() {
@@ -131,6 +132,7 @@ function engine() {
             isGameRunning = false;
             setHighscores();
             getHighscores();
+            $('#logo-container').hide();
             gameOver();
             return;
         }
