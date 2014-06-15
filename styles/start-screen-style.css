@@ -55,9 +55,19 @@ label {
 	color: #2c65f7;
 	margin-left: 22%;
 }
-#img-logo {
+#img-logo, #img-game-over {
     position: absolute;
     width: 90%;
     margin-top: -35%;
     left: 2%;
+}
+#img-game-over {
+    margin-top: -20%;
+}
+#game-over-container {
+	width: 60%;
+	height: 30%;
+	margin-left: 22%;
+	padding-top: 25%;
+	position: relative;
 }

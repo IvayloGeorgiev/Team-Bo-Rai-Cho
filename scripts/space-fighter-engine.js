@@ -131,7 +131,7 @@ function engine() {
             isGameRunning = false;
             setHighscores();
             getHighscores();
-            startScreen();
+            gameOver();
             return;
         }
 
