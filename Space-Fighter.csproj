@@ -84,6 +84,8 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="documentation\Team Bo Rai Cho - JS Project documantation.docx" />
+    <Content Include="documentation\Team Bo Rai Cho - Space fighter.pptx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
