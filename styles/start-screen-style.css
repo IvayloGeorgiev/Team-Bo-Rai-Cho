@@ -32,10 +32,13 @@ button {
 }
 button:hover, button:focus {
   background-color: #72a6ff;
+  animation-name: bluePulse;
+  animation-duration: 2s;
+  animation-iteration-count: 1;
   -webkit-animation-name: bluePulse;
   -webkit-animation-duration: 2s;
   -webkit-animation-iteration-count: 1;
-  -webkit-box-shadow: 0 0 18px #72a6ff;
+  box-shadow: 0 0 18px #72a6ff;
 }
 button:focus { 
     outline: none;

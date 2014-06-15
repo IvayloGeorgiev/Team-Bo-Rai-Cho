@@ -17,18 +17,6 @@ function startScreen () {
     var $inputName = $('<input type="text" id="player-name" name="playerName" autofocus/>');
     var $startGameButton = $('<button type="button" id="btn-start">START GAME</button>)');
 
-    $(document).keypress(function (e) {
-        if (e.keyCode == 13) {
-            $playButton.click();
-        }
-    });
-
-    $('#player-name').keypress(function (e) {
-        if (e.keyCode == 13) {            
-            $startGameButton.click();
-        }
-    });
-
     $playButton.click(function(){
         $playButton.remove();
 
@@ -37,18 +25,34 @@ function startScreen () {
         $wrapper.append($startGameButton);
         $startGameButton.hide();
 
-        $('#player-name').change(function() {
-            if ($(this).val().length >= 2) {
-                $('#display-player-name').text($('#player-name').val());
-                $startGameButton.show();
-            } else {
-                $startGameButton.hide();
+        $('#player-name').keypress(function(e) {
+            var keyCode = (e.keyCode ? e.keyCode : e.which);
+            if (keyCode == '13') {
+                if ($(this).val().length >= 2) {
+                    $('#display-player-name').text($('#player-name').val());
+                    $startGameButton.show();
+                } else {
+                    $startGameButton.hide();
+                    alert("Your name should be at least 2 symbols.")
+                }
             }
         });
     });
 
+    $(document).keypress(function (e) {
+        if (e.keyCode == 13) {
+            $playButton.click();
+        }
+    });
+
+    $('#player-name').keypress(function (e) {
+        if (e.keyCode == 13) {
+            $startGameButton.click();
+        }
+    });
+
     $startGameButton.click(function () {
-        $wrapper.hide();
+        $wrapper.remove();
         engine();        
     });  
 }
