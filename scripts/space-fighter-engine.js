@@ -65,16 +65,18 @@ function engine() {
         canvas.height = screenHeight;
         canvas.width = screenWidth;
 
+        //load sounds
+        shotSound = new Audio('sounds/laser-shoot.mp3');    
+        collisionSound = new Audio('sounds/grenade.mp3');
+        cometSound = new Audio('sounds/Comet.mp3');
+        cometCollisionSound = new Audio('sounds/comet-explosion.mp3');
+
         ctx = canvas.getContext("2d");
         ctx.fillStyle = "red";
         isPlayerDead = false;
         isGameRunning = true;
 
-        //load sounds
-        shotSound = new Audio('sounds/laser-shoot.mp3');
-        collisionSound = new Audio('sounds/grenade.mp3');
-        cometSound = new Audio('sounds/Comet.mp3');
-        cometCollisionSound = new Audio('sounds/comet-explosion.mp3');
+        
 
         getHighscores();
 
@@ -446,10 +448,14 @@ function engine() {
                 x: e.clientX,
                 y: e.clientY
             }
-            
-            shotSound.pause();
-            shotSound.currentTime = 0;
-            shotSound.play();
+
+            if (shotSound.readyState > 0)
+            {                
+                shotSound.pause();
+                shotSound.currentTime = 0;
+                shotSound.play();
+            }
+
             shots.push(new Shot(targetPosition));
         }
     }
