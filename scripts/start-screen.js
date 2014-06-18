@@ -30,10 +30,11 @@ function startScreen () {
             if (keyCode == '13') {
                 if ($(this).val().length >= 2) {
                     $('#display-player-name').text($('#player-name').val());
+                    $('#score-field').text("Score: 0").show();
                     $startGameButton.show();
                 } else {
                     $startGameButton.hide();
-                    alert("Your name should be at least 2 symbols.")
+                    alert("Your name should be at least 2 symbols.");
                 }
             }
         });
