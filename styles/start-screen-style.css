@@ -4,6 +4,7 @@
     margin:0;
 	padding:0;
     background: #000;
+    font-size: 1em;
 }
 div#canvas-container {
 	position: fixed;
@@ -31,6 +32,9 @@ button {
 	margin-left: 25%;
 	position: absolute;
 	display: block;
+}
+#btn-start{
+    font-size: 1.6em;
 }
 button:hover, button:focus {
   background-color: #72a6ff;
