@@ -54,8 +54,10 @@ function engine() {
             width: 12 * scaleX,
             height: 12 * scaleY,
             speed: 350 * scaleX,
-            modelScale: 4 //drawing model to hitbox ratio.
+            modelScale: 4, //drawing model to hitbox ratio.           
         };
+        player.offsetX = ((player.modelScale - 1) / 2) * player.width;
+        player.offsetY = ((player.modelScale - 1) / 2) * player.height;
 
         enemies = [];
         shots = [];
@@ -66,7 +68,7 @@ function engine() {
         canvas.width = screenWidth;
 
         //load sounds
-        shotSound = new Audio('sounds/laser-shoot.mp3');    
+        shotSound = new Audio('sounds/laser-shoot.mp3');
         collisionSound = new Audio('sounds/grenade.mp3');
         cometSound = new Audio('sounds/Comet.mp3');
         cometCollisionSound = new Audio('sounds/comet-explosion.mp3');
@@ -76,7 +78,7 @@ function engine() {
         isPlayerDead = false;
         isGameRunning = true;
 
-        
+
 
         getHighscores();
 
@@ -199,7 +201,7 @@ function engine() {
 
 
 
-        function drawShot(x, y, size) {            
+        function drawShot(x, y, size) {
             ctx.beginPath();
             ctx.arc(x + size / 4, y + size / 4, (size / 8), 0, 4 * Math.PI);
             ctx.fill();
@@ -279,8 +281,7 @@ function engine() {
             screenWidth = document.body.clientWidth;
             screenHeight = document.body.clientHeight;
         }
-        screenWidth -= 24;
-        screenHeight -= 24;
+        
         setScale(screenWidth, screenHeight);
     }
 
@@ -359,15 +360,29 @@ function engine() {
     function movePlayer() {
         if (keyMap[65]) {
             player.x -= player.speed * delta;
+            if (player.x - player.offsetX < 0) {
+                player.x = 0 + player.offsetX;
+            }
         }
         if (keyMap[87]) {
             player.y -= player.speed * delta;
+            if (player.y - player.offsetY < 0) {
+                player.y = 0 + player.offsetY;
+            }
         }
         if (keyMap[68]) {
             player.x += player.speed * delta;
+            var totalWidth = (player.width * player.modelScale) - player.offsetX;
+            if (player.x + totalWidth > screenWidth) {
+                player.x = screenWidth - totalWidth;
+            }
         }
         if (keyMap[83]) {
             player.y += player.speed * delta;
+            var totalHeight = (player.height * player.modelScale) - player.offsetY;
+            if ((player.y + totalHeight) > screenHeight) {
+                player.y = screenHeight - totalHeight;
+            }
         }
     }
 
@@ -427,8 +442,7 @@ function engine() {
                 y: e.clientY
             }
 
-            if (shotSound.readyState > 0)
-            {                
+            if (shotSound.readyState > 0) {
                 shotSound.pause();
                 shotSound.currentTime = 0;
                 shotSound.play();
@@ -461,7 +475,7 @@ function engine() {
                     (currentShot.currentY + currentShot.size) > enemies[i].y)) {
                     enemies.splice(i, 1);
 
-                    
+
                     collisionSound.pause();
                     collisionSound.currentTime = 0;
                     collisionSound.play();
