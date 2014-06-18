@@ -44,7 +44,7 @@ function engine() {
         frequencyCounter = 0;
         enemyFrequency = 0.2;
         cometFrequencyCounter = 0;
-        cometFrequency = 10;
+        cometFrequency = 7;
         enemyXMovementFrequency = 0.5;
         loadImages();
 

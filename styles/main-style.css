@@ -24,7 +24,7 @@
     background-color: transparent;
     font-family:'Comic Sans MS';
     text-align:center;
-    color: #2c65f7;
+    color: white;
     opacity: 0.6;
 }
 
@@ -35,7 +35,7 @@
     height: 100px;
     left: 1%;
     top: 1%;
-    background-image: url("../images/logo.png");
+    background-image: url("../images/logo2.png");
     background-repeat: no-repeat;
     background-size: 100%;
     opacity: 0.5;
