@@ -42,7 +42,7 @@ function engine() {
 
         scorePoints = 0;
         frequencyCounter = 0;
-        enemyFrequency = 0.3;
+        enemyFrequency = 0.2;
         cometFrequencyCounter = 0;
         cometFrequency = 10;
         enemyXMovementFrequency = 0.5;
@@ -53,7 +53,7 @@ function engine() {
             y: 450 * scaleY,
             width: 12 * scaleX,
             height: 12 * scaleY,
-            speed: 700,
+            speed: 350 * scaleX,
             modelScale: 4 //drawing model to hitbox ratio.
         };
 
@@ -86,7 +86,7 @@ function engine() {
 
     function getHighscores() {
         var highScoresJSON = localStorage.getItem('spaceFighterScores');
-        if (highScoresJSON == null) {
+        if (highScoresJSON === null) {
             return;
         }
 
@@ -114,7 +114,7 @@ function engine() {
         var playerInfo = {
             name: $('#display-player-name').text(),
             score: scorePoints
-        }
+        };
 
         var highscores = [];
         var highScoresJSON = localStorage.getItem('spaceFighterScores');
@@ -185,9 +185,6 @@ function engine() {
     function drawScreen() {
 
         function drawEnemy(x, y, width, height, modelScale) {
-            ctx.beginPath();
-            ctx.fillRect(x, y, width, height);
-            ctx.strokeRect(x, y, width, height);
             var offsetX = ((modelScale - 1) / 2) * width,
                 offsetY = ((modelScale - 1) / 2) * height;
             ctx.drawImage(images.asteroid, x - offsetX, y - offsetY, width * modelScale, height * modelScale);
@@ -196,17 +193,11 @@ function engine() {
 
         function drawComet(x, y, width, height, direction) {
             ctx.drawImage(direction === 'left' ? images.rightComet : images.leftComet, x, y, width * 3, height * 3);
-            // ctx.beginPath();
-            // ctx.fillStyle = '#00f';
-            // ctx.fillRect(direction === 'left' ? x : x + (width * scaleX), y, width, height);
-            // ctx.fill();
-            // ctx.stroke();
         }
 
 
 
-        function drawShot(x, y, size) {
-            //ctx.fillRect(x, y, size, size);
+        function drawShot(x, y, size) {            
             ctx.beginPath();
             ctx.arc(x + size / 4, y + size / 4, (size / 8), 0, 4 * Math.PI);
             ctx.fill();
@@ -217,12 +208,6 @@ function engine() {
             var offsetX = ((modelScale - 1) / 2) * width,
                 offsetY = ((modelScale - 1) / 2) * height;
             ctx.drawImage(images.player, x - offsetX, y - offsetY, width * modelScale, height * modelScale);
-
-            ctx.beginPath();
-            ctx.fillStyle = "blue";
-            ctx.fillRect(x, y, width, height);
-            ctx.strokeRect(x, y, width, height);
-            //console.log(width * scaleX, width * scaleY, width, height);            
         }
 
         //Clear screen
@@ -259,9 +244,9 @@ function engine() {
         this.allTypes = ["firstKind", "secondKind", "thirdKind"];
         this.allTypesLength = this.allTypes.length;
         this.type = this.allTypes[Math.floor(Math.random() * this.allTypesLength)],
-        this.speed = 50 + Math.random() * 400,
+        this.speed = (100 + Math.random() * 250) * scaleY,
         this.xChangeTimer = 0,
-        this.speedX = 100 + Math.random() * 300;
+        this.speedX = (100 + Math.random() * 200) * scaleX;
     };
 
     function Comet() {
@@ -275,7 +260,7 @@ function engine() {
         this.y = screenHeight;
         this.width = 25 * scaleX;
         this.height = 25 * scaleY;
-        this.speed = 300;
+        this.speed = 200 * scaleY;
     }
 
     function getScreenWidthAndHeight() {
@@ -292,8 +277,6 @@ function engine() {
             screenWidth = document.body.clientWidth;
             screenHeight = document.body.clientHeight;
         }
-        //screenWidth = 800;
-        //screenHeight = 600;
         screenWidth -= 24;
         screenHeight -= 24;
         setScale(screenWidth, screenHeight);
@@ -327,13 +310,6 @@ function engine() {
 
     function moveEnemies() {
         for (var i = 0; i < enemies.length ; i++) {
-
-            //Ranom side move
-            //var rangeX = 8 * Math.random();
-            //var directions = [-1, 1];
-            //rangeX = directions[Math.round(Math.random())] * rangeX;
-            //enemies[i].x += rangeX;
-
             enemies[i].xChangeTimer += delta;
             if (enemies[i].xChangeTimer >= enemyXMovementFrequency) {
                 enemies[i].xChangeTimer = 0;
@@ -417,7 +393,7 @@ function engine() {
         this.currentX = this.playerX;
         this.currentY = this.playerY;
         this.size = 16 * scaleX;
-        this.speed = 800 * ((scaleX > scaleY) ? scaleX : scaleY);
+        this.speed = 500 * ((scaleX > scaleY) ? scaleX : scaleY);
         this.updatePosition = function () {
             var deltaX = this.targetX - this.playerX;
             var deltaY = this.targetY - this.playerY;
